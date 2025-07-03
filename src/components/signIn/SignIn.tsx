@@ -1,117 +1,95 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { LuEye, LuEyeOff } from "react-icons/lu";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import * as z from "zod";
+"use client"
+// import FormInput from '@/components/FormInput';
 
-// Define Zod schema for validation
-const formSchema = z.object({
-    email: z.string().email({ message: "Please enter a valid email address" }).min(1, { message: "Email is required" }),
-    password: z
-        .string()
-        .min(6, { message: "Password should be at least 6 characters long" })
-        .min(1, { message: "Password is required" }),
-    rememberMe: z.boolean().optional(),
-});
 
-type FormValues = z.infer<typeof formSchema>;
 
-export default function SignInPage() {
-    const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate()
-    // Use React Hook Form with Zod resolver
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<FormValues>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-            rememberMe: false,
-        },
-    });
+// import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { FcGoogle } from 'react-icons/fc';
+import Input from '../shared/Input';
+import Logo from '../shared/Logo';
+import logingirl from '../../assets/logingirl.jpg'
+import { useNavigate } from 'react-router-dom';
 
-    const onSubmit = (data: FormValues) => {
-        console.log("Form Data:", data);
-        const promise = () => new Promise((resolve) => setTimeout(() => resolve({ name: 'Sonner' }), 2000));
+interface FormData {
+  email: string;
+  password: string;
+}
 
-        toast.promise(promise, {
-            loading: 'Loading...',
-            success: () => {
-                return `WellCome back admin`;
-            },
-            error: 'Error',
-        });
-        navigate("/dashboard")
-    };
+export default function Loginform() {
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
+  const { register, handleSubmit } = useForm<FormData>();
+//   const router=useRouter();
+const navigate =useNavigate();
 
-    return (
-        <div className="w-full min-h-screen flex items-center justify-center">
-            <div className="lg:min-w-[500px] h-full mx-auto">
-                <div className="flex flex-col items-center mb-8">
-                    <h1 className="text-2xl font-bold mb-2">Hi, Welcome Back! 👋</h1>
-                    <p className="text-gray-500 text-sm">Please Enter Your Email And Password Below!</p>
-                </div>
+  const onSubmit = (data: FormData) => {
+    console.log(data, "Check the data here: ");
+    navigate("/dashboard")
+  }
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full">
-                    {/* Email Input */}
-                    <div className="space-y-2">
-                        <label htmlFor="email" className="text-sm font-medium block">
-                            Email address
-                        </label>
-                        <input
-                            id="email"
-                            type="email"
-                            placeholder="georgiayoung@example.com"
-                            {...register("email")}
-                            className={`w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-gray-200"
-                                } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
-                        />
-                        {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
-                    </div>
 
-                    {/* Password Input */}
-                    <div className="space-y-2">
-                        <label htmlFor="password" className="text-sm font-medium block">
-                            Password
-                        </label>
-                        <div className="relative">
-                            <input
-                                id="password"
-                                type={showPassword ? "text" : "password"}
-                                placeholder="••••••••••"
-                                {...register("password")}
-                                className={`w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-gray-200"
-                                    } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
-                            />
-                            <button
-                                type="button"
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                onClick={togglePasswordVisibility}
-                            >
-                                {showPassword ? <LuEyeOff size={18} /> : <LuEye size={18} />}
-                            </button>
-                        </div>
-                        {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
-                    </div>
 
-                    {/* Login Button */}
-                    <button
-                        type="submit"
-                        className="w-full cursor-pointer bg-primary/80 text-white py-2 px-4 rounded-md hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                    >
-                        Log in
-                    </button>
-                </form>
-            </div>
+  return (
+
+
+    <section className="max-w-[1420px] mx-auto min-h-screen flex items-center justify-center md:px-4 ">
+      <div className="flex w-full justify-center items-center  rounded-lg overflow-hidden gap-6">
+
+        {/* Left: Image Section */}
+        <div className="hidden md:block my-9">
+          <img
+            src={logingirl}
+            alt="Login visual"
+            className=" rounded-lg "
+            height={758}
+            width={588}
+          
+
+          />
         </div>
-    );
+
+        {/* Right: Form Section */}
+        <div className="w-full  p-12 flex flex-col justify-center max-w-[558px]">
+
+          <div className='flex justify-center items-center flex-col'>
+            {/* Logo */}
+            <div className="mb-6">
+
+              <Logo height={120} width={268}></Logo>
+            </div>
+
+            {/* Welcome Message */}
+
+            <h2 className="text-2xl md:text-[48px] text-scheer-primary-dark font-bold mb-2">Hi, Welcome Back!</h2>
+            <p className="text-sm text-gray-600 mb-8">
+              Please exter your email and password below!
+            </p>
+
+          </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+
+
+            {/* Input Fields */}
+            <div className="space-y-4 mb-8  ">
+              <Input label="Email Address" type="email" placeholder="you@example.com"
+                {...register("email", { required: true })}
+              />
+              <Input label="Password" type="password" placeholder="password"
+                {...register("password", { required: true })}
+              />
+
+            </div>
+
+            {/* Login Button */}
+            <button className="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-green-700 transition">
+              Login
+            </button>
+
+          </form>
+
+         
+        </div>
+      </div>
+    </section>
+  )
 }

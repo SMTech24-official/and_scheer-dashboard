@@ -2,6 +2,17 @@
 
 
 
+body{
+  @apply text-main
+}
+
 @theme {
-  --color-primary: #5FA380;
+  --color-primary: #28C76F;
+  --color-main: #333333;
+  --color-subtitle: #777777;
+  --color-background-dark: #121212;
+  --color-background-light: #F9F9F9;
+  --color-error:#FF4C4C;
+  --color-success: #C1F2D6;
+
 }
