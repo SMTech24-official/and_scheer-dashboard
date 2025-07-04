@@ -43,7 +43,7 @@ const DashboardLayout = () => {
                 <div className='sticky top-0 z-40'>
                     <TopBar dark={false} setIsOpen={setIsOpen} isOpen={isOpen} user={user} />
                 </div>
-                <div className='p-4 min-h-screen space-y-2'>
+                <div className='p-4 min-h-screen space-y-2 bg-background-dash'>
                     <BreadCrumb />
                     <Outlet />
                 </div>
