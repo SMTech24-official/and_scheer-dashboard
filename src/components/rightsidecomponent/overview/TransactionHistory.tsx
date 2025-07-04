@@ -47,12 +47,12 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 export default function SimpleSubmissionLogsTable() {
   return (
-    <div className="md:px-12 min-h-screen">
+    <div className=" min-h-screen">
       {/* Header */}
       <div className="py-4 border-gray-200 flex justify-between">
         <h2 className="text-lg md:text-[32px] font-semibold text-gray-900">Transaction History</h2>
 
-        <Link className='bg-neutral-950 px-4 py-3 text-white  rounded-lg' to={"/admin/document-template/add-templete"}>
+        <Link className='underline mt-6' to={"/admin/document-template/add-templete"}>
           See more
         </Link>
       </div>
@@ -62,7 +62,7 @@ export default function SimpleSubmissionLogsTable() {
         {/* Table Header */}
         <div className="min-w-[1100px]">
           <div className="bg-primary px-6 rounded-t-lg">
-            <div className="grid grid-cols-8 gap-4 py-3 text-white text-md font-semibold lg:text-xl ">
+            <div className="grid grid-cols-8 gap-4 py-3 text-white text-md  lg:text-xl ">
               <div className="col-span-1  flex items-center">Date <CgArrowsV className="my-auto ml-1" /></div>
               <div className="col-span-1  flex items-center">Plan Name<CgArrowsV className="my-auto ml-1" /></div>
               <div className="col-span-1  flex items-center">Plan type <CgArrowsV className="my-auto ml-1" /></div>

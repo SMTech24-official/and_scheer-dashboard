@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CgArrowsV } from 'react-icons/cg';
 import Pagination from './PaginationBar';
+import { Link } from 'react-router-dom';
 
 const aiLogData = [
   {
@@ -158,7 +159,7 @@ export default function UserManagement() {
                   <StatusBadge status={row.status} />
                 </td>
                 <td className=" py-4 text-sm md:text-[16px] text-info cursor-pointer">
-                  View Profile
+                 <Link to='/dashboard/user-management/company-details'>View Details </Link>
                 </td>
               </tr>
             ))}

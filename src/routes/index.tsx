@@ -8,6 +8,7 @@ import UserManagement from "../components/rightsidecomponent/usermanagement/User
 import Subscription from "../components/rightsidecomponent/subscription/Subscription";
 import PaymentHistory from "../components/rightsidecomponent/paymenthistory/PaymentHistory";
 import Setting from "../components/rightsidecomponent/setting/Setting";
+import CompanyDetails from "../components/rightsidecomponent/usermanagement/CompanyDetails";
 
 const RouterProvider: React.FC = () => {
     return (
@@ -21,6 +22,7 @@ const RouterProvider: React.FC = () => {
                     <Route path="job-management" element={<JobManagement />} />
                     <Route path="subscription" element={<Subscription />} />
                     <Route path="payment-history" element={<PaymentHistory />} />
+                    <Route path="user-management/company-details" element={<CompanyDetails />} />
                     <Route path="setting" element={<Setting />} />                   
                     <Route path="*" element={<NotFound />} />
                 </Route>
