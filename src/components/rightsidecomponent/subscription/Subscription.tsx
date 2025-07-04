@@ -82,13 +82,13 @@ export default function JobSeekerPlan() {
       permissions: string[];
     };
 
-    const [currentPlan, setCurrentPlan] = useState<Plan[]>([]);
+    const [currentPlan, setCurrentPlan] = useState<Plan[]>(SeekerPlan);
     const [selectedMetric, setSelectedMetric] = useState('Job_Seeker_Plan');
     console.log(currentPlan)
     return (
       <div className='md: px-12 mt-8'>
         <div className="py-4 border-gray-200 flex justify-between">
-          <h2 className="text-lg md:text-[32px] font-semibold text-gray-900">{selectedMetric}</h2>
+          <h2 className="text-lg md:text-[32px] font-semibold text-gray-900">Subscription</h2>
           <div>
             <div className="flex items-center gap-4">
               <select
