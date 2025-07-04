@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CgArrowsV } from 'react-icons/cg';
 import Pagination from '../usermanagement/PaginationBar';
+import { Link } from 'react-router-dom';
 
 
 const jobData = [
@@ -115,7 +116,7 @@ export default function JobManagement() {
                 <td className="py-4 text-sm md:text-[16px] text-info">{job.deadline}</td>
                 <td className="py-4 text-sm md:text-[16px] text-info">{job.time}</td>
                 <td className="py-4 text-sm md:text-[16px] text-info cursor-pointer hover:underline text-primary">
-                  View 
+                  <Link to='/dashboard/job-management/job-details'>View</Link>
                 </td>
               </tr>
             ))}

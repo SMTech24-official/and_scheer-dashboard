@@ -11,7 +11,7 @@ const aiLogData = [
     timestamp: 'Jun 30, 2025 | 10:45 AM',
     userName: 'Rafiq Islam',
     projectName: 'Skyline Tower',
-    action: 'Job Seeker',
+    role: 'Job Seeker',
     status: 'Success',
     notes: 'No issues found.',
   },
@@ -20,7 +20,7 @@ const aiLogData = [
     timestamp: 'Jun 30, 2025 | 09:10 AM',
     userName: 'Nusrat Jahan',
     projectName: 'Green Valley',
-    action: 'Job Seeker',
+    role: 'Job Seeker',
     status: 'Failed',
     notes: 'Unsupported file format.',
   },
@@ -29,7 +29,7 @@ const aiLogData = [
     timestamp: 'Jun 29, 2025 | 03:33 PM',
     userName: 'Tanvir Hasan',
     projectName: 'Bridge Point',
-    action: 'Job Seeker',
+    role: 'Job Seeker',
     status: 'Success',
     notes: 'Manually reviewed post-extraction.',
   },
@@ -153,12 +153,18 @@ export default function UserManagement() {
                   {row.projectName}
                 </td>
                 <td className=" py-4 text-sm md:text-[16px] text-info">
-                  {row.action}
+                  {row.role}
                 </td>
                 <td className=" py-4 text-sm md:text-[16px] text-info">
                   <StatusBadge status={row.status} />
                 </td>
                 <td className=" py-4 text-sm md:text-[16px] text-info cursor-pointer">
+                  {/* {
+                  row.role=='Job Seeker' &&  <Link to='/dashboard/user-management/seekers-details'>View Details </Link>
+                  } */}
+                  {/* {
+                  row.role=='Employers' &&  <Link to='/dashboard/user-management/company-details'>View Details </Link>
+                  } */}
                  <Link to='/dashboard/user-management/company-details'>View Details </Link>
                 </td>
               </tr>
