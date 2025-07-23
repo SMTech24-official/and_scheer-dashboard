@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { CgArrowsV } from 'react-icons/cg';
 import Pagination from './PaginationBar';
 import { Link } from 'react-router-dom';
+import { useGetAllCompaniesQuery } from '../../../redux/features/company/companySlice';
+import { useGetAllUsersQuery } from '../../../redux/features/userManger/userApi';
 
 const aiLogData = [
   {
@@ -53,11 +55,14 @@ const StatusBadge = ({ status }: { status: string }) => {
 export default function UserManagement() {
 
   const [selectedMetric, setSelectedMetric] = useState('All User');
+  const [user,setUser] = useState(null);
+  const { data: userdata, isLoading } = useGetAllUsersQuery();
+  console.log("Companies data:", userdata?.data);
 
 
   const totalItems = 1450;
   const itemsPerPage = 11;
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(userdata?.meta.page || 1);
 
 
   return (
@@ -135,28 +140,28 @@ export default function UserManagement() {
 
           {/* Table Body */}
           <tbody className="divide-y divide-gray-100">
-            {aiLogData.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+            {userdata?.data.map((user) => (
+              <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                 <td className=" py-4 text-sm md:text-[16px] text-info ">
                   <div className='ml-3'>
-                    {row.timestamp}
+                    {/* {row.timestamp} */}
                   </div>
 
                 </td>
                 <td className=" py-4 text-sm md:text-[16px] text-info">
-                  {row.userName}
+                  {user.fullName}
                 </td>
                 <td className=" py-4 text-sm md:text-[16px] text-info">
-                  {row.projectName}
+                  {user.email}
                 </td>
                 <td className=" py-4 text-sm md:text-[16px] text-info">
-                  {row.projectName}
+                  {/* {row.projectName} */}
                 </td>
                 <td className=" py-4 text-sm md:text-[16px] text-info">
-                  {row.role}
+                  {user.role}
                 </td>
                 <td className=" py-4 text-sm md:text-[16px] text-info">
-                  <StatusBadge status={row.status} />
+                  {/* <StatusBadge status={row.status} /> */}
                 </td>
                 <td className=" py-4 text-sm md:text-[16px] text-info cursor-pointer">
                   {/* {
@@ -173,8 +178,8 @@ export default function UserManagement() {
         </table>
       </div>
       <Pagination
-        totalItems={totalItems}
-        itemsPerPage={itemsPerPage}
+        totalItems={userdata?.meta.total || 0}
+        itemsPerPage={userdata?.meta.limit || 10}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />

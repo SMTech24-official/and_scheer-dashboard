@@ -5,11 +5,16 @@
 
 // import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { FcGoogle } from 'react-icons/fc';
 import Input from '../shared/Input';
 import Logo from '../shared/Logo';
 import logingirl from '../../assets/logingirl.jpg'
+import Cookies from "js-cookie";
+
 import { useNavigate } from 'react-router-dom';
+import { useSignInMutation } from '../../redux/features/auth/auth';
+import { toast } from 'sonner';
+import { useGetAllCompaniesQuery } from '../../redux/features/company/companySlice';
+import { useState } from 'react';
 
 interface FormData {
   email: string;
@@ -21,10 +26,24 @@ export default function Loginform() {
   const { register, handleSubmit } = useForm<FormData>();
 //   const router=useRouter();
 const navigate =useNavigate();
+ const [signIn,{isLoading}] = useSignInMutation();
 
-  const onSubmit = (data: FormData) => {
-    console.log(data, "Check the data here: ");
-    navigate("/dashboard")
+  const onSubmit =async (data: FormData) => {
+    console.log("Form submitted:", data);
+    try {
+      const response = await signIn(data)
+  
+      if(response?.data.success as boolean){
+         toast.success("Login successful") 
+         Cookies.set("accessToken", response?.data.data.accessToken);
+        navigate("/dashboard")
+      }
+      
+    } catch (error) {
+      toast.error("Login failed, please try again.");
+      console.error("Login error:", error);
+    }
+    
   }
 
 
@@ -82,7 +101,7 @@ const navigate =useNavigate();
 
             {/* Login Button */}
             <button className="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-green-700 transition">
-              Login
+              {isLoading ? "Logging in..." : "Login"}
             </button>
 
           </form>
