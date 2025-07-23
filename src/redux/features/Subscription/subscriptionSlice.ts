@@ -1,15 +1,18 @@
+import { ApiResponse, Plan } from "../../../types/AllTypes";
 import { baseUrlApi } from "../../api/baseUrlApi";
 
-const subscriptionPlanApi = baseUrlApi.injectEndpoints({
+
+export const subscriptionPlanApi = baseUrlApi.injectEndpoints({
   endpoints: (build) => ({
-    getSubscirptionPlans: build.query({
+    getSubscriptionPlans: build.query<Plan[], void>({
       query: () => ({
         url: "/plans",
         method: "GET",
-       
       }),
+      // Transform the API response to return just the data array
+      transformResponse: (response: ApiResponse<Plan[]>) => response.data,
     }),
   }),
 });
 
-export const { useGetSubscirptionPlansQuery } = subscriptionPlanApi;
+export const { useGetSubscriptionPlansQuery } = subscriptionPlanApi;

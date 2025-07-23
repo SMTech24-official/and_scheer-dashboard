@@ -126,6 +126,85 @@ export interface CreateCompanyRequest {
   email: string;
   phoneNumber: string;
 }
+// //  {
+//             "id": "6874d933acae2f94b75ef251",
+//             "email": "superadmin@gmail.com",
+//             "fullName": "Super Admin",
+//             "profilePic": "",
+//             "role": "SUPER_ADMIN",
+//             "isSubscribed": false
+//         },
+
+// user types
+
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email: string;
+  profilePic: string;
+  role: string;
+  isVerified?: boolean;
+
+}
+export interface UserListResponse {
+  success: boolean;
+  message: string;
+
+  meta: {
+    page: number;
+    limit: number;  
+
+    total: number;
+    totalPage: number;
+    },
+  data: User[];
+}
+export interface UserResponse {
+  success: boolean;
+  message: string;
+  data: User;
+} 
+export interface CreateUserRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  profilePic?: string;
+  role: string; // e.g., "USER", "ADMIN", "SUPER_ADMIN"
+}
+export interface UpdateUserRequest extends Partial<CreateUserRequest> {
+  id: string; // Include the user ID for updates
+}
+
+export interface Plan {
+  id: string;
+  planName: string;
+  amount: number;
+  currency: string;
+  interval: string | null;
+  intervalCount: number | null;
+  productId: string;
+  priceId: string;
+  active: boolean;
+  description: string;
+  features: string[];
+  planType: "subscription" | "payPerJob";
+  totalSubscribers: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: T;
+}
+
+
+
 
 export interface UpdateCompanyRequest extends Partial<CreateCompanyRequest> { }
 

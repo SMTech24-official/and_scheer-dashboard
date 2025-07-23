@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { CgArrowsV } from 'react-icons/cg';
-import Pagination from '../usermanagement/PaginationBar';
 import { Link } from 'react-router-dom';
+import { useGetAllJobPostsQuery } from '../../../redux/features/job/jobSlice';
+import Pagination from '../usermanagement/PaginationBar';
 
 
 const jobData = [
@@ -49,6 +50,8 @@ export default function JobManagement() {
   const totalItems = 1450;
   const itemsPerPage = 11;
   const [currentPage, setCurrentPage] = useState(1);
+  const {data:jobsdata,isLoading}=useGetAllJobPostsQuery()
+  console.log("Job data:", jobsdata);
 
   return (
     <div className="md:px-12 min-h-screen mt-8">
