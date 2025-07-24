@@ -47,7 +47,6 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 export default function JobManagement() {
   const [selectedMetric, setSelectedMetric] = useState('All Jobs');
-  const totalItems = 1450;
   const itemsPerPage = 11;
   const [currentPage, setCurrentPage] = useState(1);
   const {data:jobsdata,}=useGetAllJobPostsQuery()
