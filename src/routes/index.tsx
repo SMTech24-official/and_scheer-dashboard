@@ -23,7 +23,7 @@ const RouterProvider: React.FC = () => {
                     <Route path="job-management" element={<JobManagement />} />
                     <Route path="subscription" element={<Subscription />} />
                     <Route path="payment-history" element={<PaymentHistory />} />
-                    <Route path="user-management/company-details" element={<CompanyDetails />} />
+                    <Route path="user-management/company-details/:id" element={<CompanyDetails />} />
                     <Route path="job-management/job-details" element={<JobDetails />} />
                     <Route path="setting" element={<Setting />} />                   
                     <Route path="*" element={<NotFound />} />

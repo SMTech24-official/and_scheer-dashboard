@@ -14,7 +14,7 @@ export default function PlanCard({
     onButtonClick,
 }: PlanCardProps) {
     return (
-        <div className="md:max-w-[457px] w-full border border-gray-100 bg-white rounded-lg shadow-md px-8 py-5 flex flex-col">
+        <div className="md:max-w-[457px] w-full border border-gray-100  bg-white  rounded-lg shadow-md px-8 py-5 flex flex-col">
             {/* Price & Plan Type */}
             <div className="text-center mb-12">
                 <div>
