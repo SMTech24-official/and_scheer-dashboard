@@ -203,6 +203,42 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export type StatisticsResponce = {
+    success?:    boolean;
+    statusCode?: number;
+    message?:    string;
+    data?:      StatisticData;
+}
+
+export type StatisticData = {
+    users?:         StatisticUsers;
+    jobs?:          StatisticJobs;
+    companies?:    StatisticCompanies;
+    subscriptions?: StatisticSubscriptions;
+}
+
+export type StatisticCompanies = {
+    totalRegistered?: number;
+}
+
+export type StatisticJobs = {
+    totalPostedToday?: number;
+    totalPosted?:      number;
+}
+
+export type StatisticSubscriptions = {
+    total?:  number;
+    active?: number;
+}
+
+export type StatisticUsers = {
+    totalVerified?:    number;
+    activeJobSeekers?: number;
+    activeEmployers?:  number;
+}
+
+
+
 
 
 
