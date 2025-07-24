@@ -1,9 +1,7 @@
 import {
-  Company,
   CompanyListResponse,
   CompanyResponse,
-  CreateCompanyRequest,
-  UpdateCompanyRequest,
+  CreateCompanyRequest
 } from "../../../types/AllTypes";
 import { baseUrlApi } from "../../api/baseUrlApi";
 

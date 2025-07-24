@@ -4,17 +4,15 @@
 
 
 // import { useRouter } from 'next/navigation';
+import Cookies from "js-cookie";
 import { useForm } from 'react-hook-form';
+import logingirl from '../../assets/logingirl.jpg';
 import Input from '../shared/Input';
 import Logo from '../shared/Logo';
-import logingirl from '../../assets/logingirl.jpg'
-import Cookies from "js-cookie";
 
 import { useNavigate } from 'react-router-dom';
-import { useSignInMutation } from '../../redux/features/auth/auth';
 import { toast } from 'sonner';
-import { useGetAllCompaniesQuery } from '../../redux/features/company/companySlice';
-import { useState } from 'react';
+import { useSignInMutation } from '../../redux/features/auth/auth';
 
 interface FormData {
   email: string;
