@@ -7,35 +7,7 @@ import { Link } from 'react-router-dom';
 import { useGetAllCompaniesQuery } from '../../../redux/features/company/companySlice';
 import { useGetAllUsersQuery } from '../../../redux/features/userManger/userApi';
 
-const aiLogData = [
-  {
-    id: 1,
-    timestamp: 'Jun 30, 2025 | 10:45 AM',
-    userName: 'Rafiq Islam',
-    projectName: 'Skyline Tower',
-    role: 'Job Seeker',
-    status: 'Success',
-    notes: 'No issues found.',
-  },
-  {
-    id: 2,
-    timestamp: 'Jun 30, 2025 | 09:10 AM',
-    userName: 'Nusrat Jahan',
-    projectName: 'Green Valley',
-    role: 'Job Seeker',
-    status: 'Failed',
-    notes: 'Unsupported file format.',
-  },
-  {
-    id: 3,
-    timestamp: 'Jun 29, 2025 | 03:33 PM',
-    userName: 'Tanvir Hasan',
-    projectName: 'Bridge Point',
-    role: 'Job Seeker',
-    status: 'Success',
-    notes: 'Manually reviewed post-extraction.',
-  },
-];
+
 
 const StatusBadge = ({ status }: { status: string }) => {
   const isSuccess = status === 'Success';
@@ -55,7 +27,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 export default function UserManagement() {
 
   const [selectedMetric, setSelectedMetric] = useState('All User');
-  const [user,setUser] = useState(null);
+
   const { data: userdata, isLoading } = useGetAllUsersQuery();
   console.log("Companies data:", userdata?.data);
 
@@ -170,7 +142,7 @@ export default function UserManagement() {
                   {/* {
                   row.role=='Employers' &&  <Link to='/dashboard/user-management/company-details'>View Details </Link>
                   } */}
-                 <Link to='/dashboard/user-management/company-details'>View Details </Link>
+                 <Link to={`/dashboard/user-management/company-details/${user.id}`}>View Details </Link>
                 </td>
               </tr>
             ))}

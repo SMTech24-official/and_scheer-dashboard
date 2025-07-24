@@ -4,8 +4,14 @@
   import { CiLocationOn } from "react-icons/ci"
   import { MdEmail } from "react-icons/md"
   import ButtonChange from "../../shared/ButtonChange"
+import { useParams } from "react-router-dom"
+import { useGetCompanyByIdQuery } from "../../../redux/features/company/companySlice"
 
   export default function CompanyDetails() {
+    const {id} = useParams()
+    console.log("Company ID:", id);
+    const {data:company,isLoading }=useGetCompanyByIdQuery(id as string)
+    console.log("Company :", company);
     const jobData = [
       {
         appId: "AFGJJ012",
