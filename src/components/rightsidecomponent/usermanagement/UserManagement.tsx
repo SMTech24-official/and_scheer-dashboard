@@ -2,38 +2,21 @@
 
 import { useState } from 'react';
 import { CgArrowsV } from 'react-icons/cg';
-import Pagination from './PaginationBar';
 import { Link } from 'react-router-dom';
-import { useGetAllCompaniesQuery } from '../../../redux/features/company/companySlice';
 import { useGetAllUsersQuery } from '../../../redux/features/userManger/userApi';
+import Pagination from './PaginationBar';
 
 
 
-const StatusBadge = ({ status }: { status: string }) => {
-  const isSuccess = status === 'Success';
-  const bg = isSuccess ? 'bg-green-100' : 'bg-red-100';
-  const text = isSuccess ? 'text-green-800' : 'text-red-800';
-  const border = isSuccess ? 'border-green-200' : 'border-red-200';
-
-
-
-  return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bg} ${text} ${border} border`}>
-      {status}
-    </span>
-  );
-};
 
 export default function UserManagement() {
 
   const [selectedMetric, setSelectedMetric] = useState('All User');
 
-  const { data: userdata, isLoading } = useGetAllUsersQuery();
+  const { data: userdata } = useGetAllUsersQuery();
   console.log("Companies data:", userdata?.data);
 
 
-  const totalItems = 1450;
-  const itemsPerPage = 11;
   const [currentPage, setCurrentPage] = useState(userdata?.meta.page || 1);
 
 

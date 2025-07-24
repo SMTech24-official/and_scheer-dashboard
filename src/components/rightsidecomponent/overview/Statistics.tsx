@@ -1,17 +1,9 @@
-
-// import icon1 from '@/assets/landing-page/icon1.jpg';
-// import icon2 from '@/assets/landing-page/icon2.jpg';
-// import icon3 from '@/assets/landing-page/icon3.jpg';
-// import icon4 from '@/assets/landing-page/icon4.jpg';
-// import icon5 from '@/assets/landing-page/icon5.jpg';
-
 import { FaUserClock, FaUserPlus, FaUserTie } from "react-icons/fa";
 
+import { useEffect, useState } from "react";
 import { CiBag1 } from "react-icons/ci";
 import { RiShoppingBag4Line } from "react-icons/ri";
-import { useGetAllStateQuery } from "../../../redux/features/userManger/userApi";
 import { useGetStatisticsQuery } from "../../../redux/features/statistics/statisticsSlice";
-import { useEffect, useState } from "react";
 import { StatisticData } from "../../../types/AllTypes";
 
 
@@ -20,7 +12,7 @@ import { StatisticData } from "../../../types/AllTypes";
 
 export default function Statistics({}) {
 
-  const [stateData, setStateData] = useState<StatisticData>([])
+  const [stateData, setStateData] = useState<StatisticData>({} as StatisticData)
 
   const {data:state} =useGetStatisticsQuery({})
 
@@ -34,15 +26,15 @@ export default function Statistics({}) {
 
   
 
-  console.log(stateData)
-const data = [
-  { label: 'Total Revenue', value: '1,200', delta: '+12%', image:  <CiBag1 className="size-10 text-green-600" /> },
-  { label: 'Total Registered Users', value: '600', delta: '+8%', image: <FaUserPlus className="size-10 text-green-600" /> },
-  { label: 'Active Job Seekers', value: '1,252', delta: '+15%', image: <FaUserClock className="size-10 text-green-600" /> },
-  { label: 'Active Employers', value: '09', delta: '+3%', image:  <FaUserTie className="size-10 text-green-600"/>},
-  { label: 'Jobs Posted Today', value: '12', delta: '+9%', image: <RiShoppingBag4Line className="size-10 text-green-600"/>
-},
-];
+
+// const data = [
+//   { label: 'Total Revenue', value: '1,200', delta: '+12%', image:  <CiBag1 className="size-10 text-green-600" /> },
+//   { label: 'Total Registered Users', value: '600', delta: '+8%', image: <FaUserPlus className="size-10 text-green-600" /> },
+//   { label: 'Active Job Seekers', value: '1,252', delta: '+15%', image: <FaUserClock className="size-10 text-green-600" /> },
+//   { label: 'Active Employers', value: '09', delta: '+3%', image:  <FaUserTie className="size-10 text-green-600"/>},
+//   { label: 'Jobs Posted Today', value: '12', delta: '+9%', image: <RiShoppingBag4Line className="size-10 text-green-600"/>
+// },
+// ];
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-5 gap-4">
       {[

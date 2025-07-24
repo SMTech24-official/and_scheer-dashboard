@@ -1,4 +1,3 @@
-import { StatisticsResponce } from "../../../types/AllTypes";
 import { baseUrlApi } from "../../api/baseUrlApi";
 
 

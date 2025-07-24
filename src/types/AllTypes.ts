@@ -203,30 +203,30 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-export type StatisticsResponce = {
+export interface StatisticsResponce {
     success?:    boolean;
     statusCode?: number;
     message?:    string;
     data?:      StatisticData;
 }
 
-export type StatisticData = {
+export interface StatisticData {
     users?:         StatisticUsers;
     jobs?:          StatisticJobs;
     companies?:    StatisticCompanies;
     subscriptions?: StatisticSubscriptions;
 }
 
-export type StatisticCompanies = {
+export interface StatisticCompanies {
     totalRegistered?: number;
 }
 
-export type StatisticJobs = {
+export interface StatisticJobs {
     totalPostedToday?: number;
     totalPosted?:      number;
 }
 
-export type StatisticSubscriptions = {
+export interface StatisticSubscriptions  {
     total?:  number;
     active?: number;
 }
@@ -236,6 +236,88 @@ export type StatisticUsers = {
     activeJobSeekers?: number;
     activeEmployers?:  number;
 }
+// jobs types response
+export type JobsApiResponse = {
+    success?:    boolean;
+    statusCode?: number;
+    message?:    string;
+    data?:       Data;
+}
+
+export type Data = {
+    meta?: Meta;
+    data?: Jobs[];
+}
+
+export type Jobs = {
+    id?:          string;
+    jobId?:       string;
+    title?:       string;
+    experience?:  string;
+    deadline?:    Date;
+    location?:    string;
+    salaryType?:  string;
+    salaryRange?: string;
+    skills?:      string[];
+    features?:    Feature[];
+    userId?:      string;
+    companyId?:   string;
+    jobType?:     string;
+    status?:      string;
+    createdAt?:   Date;
+    updatedAt?:   Date;
+    company?:     CompanyForJob;
+    user?:        User | null;
+}
+
+export type CompanyForJob = {
+    companyName?:   string;
+    industryType?:  string;
+    logo?:          string;
+    roleInCompany?: string;
+    description?:   string;
+    email?:         string;
+    phoneNumber?:   string;
+    country?:       string;
+    city?:          string;
+    state?:         string;
+    address?:       string;
+    zipCode?:       string;
+    website?:       string;
+}
+// 
+
+export type Feature = {
+    featureTitle?: string;
+    paragraph?:    string;
+    point?:        Point[];
+}
+
+export type Point = "Design and maintain cloud infrastructure" | "Implement security best practices" | "Optimize deployment pipelines";
+
+export type UserI = {
+    id?:                  string;
+    firstName?:           string;
+    lastName?:            string;
+    fullName?:            string;
+    email?:               string;
+    profilePic?:          string;
+    role?:                string;
+    isSubscribed?:        boolean;
+    planExpiration?:      Date;
+    subscriptionType?:    string;
+    totalPayPerJobCount?: number;
+    createdAt?:           Date;
+    updatedAt?:           Date;
+}
+
+export type Meta = {
+    page?:      number;
+    limit?:     number;
+    total?:     number;
+    totalPage?: number;
+}
+
 
 
 

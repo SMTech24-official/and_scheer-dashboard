@@ -1,4 +1,4 @@
-import { CreateJobRequest, Job, JobResponse, JobsListResponse, UpdateJobRequest } from "../../../types/AllTypes";
+import { JobResponse, JobsListResponse, UpdateJobRequest } from "../../../types/AllTypes";
 import { baseUrlApi } from "../../api/baseUrlApi";
 
 
