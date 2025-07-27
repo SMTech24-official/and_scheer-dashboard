@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useGetAllUsersQuery } from '../../../redux/features/userManger/userApi';
 
 const performanceData = [
   { name: 'Jan', sales: 4000, revenue: 2400, users: 1200 },
@@ -42,7 +43,7 @@ const CustomDot: React.FC<CustomDotProps> = (props) => {
       revenue: '#f59e0b',
       users: '#8b5cf6'
     };
-    
+
     return (
       <circle
         cx={cx}
@@ -59,7 +60,7 @@ const CustomDot: React.FC<CustomDotProps> = (props) => {
       revenue: '#f59e0b',
       users: '#8b5cf6'
     };
-    
+
     return (
       <circle
         cx={cx}
@@ -77,6 +78,42 @@ const CustomDot: React.FC<CustomDotProps> = (props) => {
 export default function PerformanceChart() {
   const [isClient, setIsClient] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState('all');
+
+  const { data: userInfo } = useGetAllUsersQuery();
+  console.log(userInfo?.data);
+
+  const calculatePerformanceData = (data:any) => {
+    // Group users by month based on createdAt
+    const monthlyData: { [month: string]: { sales: number; revenue: number } } = {};
+
+    data?.forEach((user:any) => {
+      const date = new Date(user.createdAt);
+      const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+
+      if (!monthlyData[monthName]) {
+        monthlyData[monthName] = { sales: 0, revenue: 0 }; // sales = employees, revenue = job seekers
+      }
+
+      if (user.role === 'EMPLOYEE') {
+        monthlyData[monthName].sales += 1;
+      } else if (user.role === 'JOB_SEEKER') {
+        monthlyData[monthName].revenue += 1;
+      }
+    });
+
+    // Convert to array format
+    const performanceData = Object.entries(monthlyData)?.map(([name, counts]) => ({
+      name,
+      sales: counts.sales,     // employees
+      revenue: counts.revenue  // job seekers
+    }));
+
+    return performanceData;
+  };
+
+  // Calculate the performance data
+  const performanceData = calculatePerformanceData(userInfo?.data);
+
 
   useEffect(() => {
     setIsClient(true);
@@ -103,9 +140,9 @@ export default function PerformanceChart() {
             <option value="all">All Metrics</option>
             <option value="sales">Sales Only</option>
             <option value="revenue">Revenue Only</option>
-          
+
           </select>
-         
+
         </div>
       </div>
 
@@ -114,8 +151,8 @@ export default function PerformanceChart() {
           data={performanceData}
           margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
         >
-          <CartesianGrid 
-            strokeDasharray="3 3" 
+          <CartesianGrid
+            strokeDasharray="3 3"
             stroke="#e5e7eb"
             horizontal={true}
             vertical={false}
@@ -149,12 +186,12 @@ export default function PerformanceChart() {
               name === 'sales' ? 'Sales' : name === 'revenue' ? 'Revenue' : 'Users'
             ]}
           />
-          <Legend 
+          <Legend
             align="center"
             verticalAlign="top"
             wrapperStyle={{ paddingBottom: '20px' }}
           />
-          
+
           {(selectedMetric === 'all' || selectedMetric === 'sales') && (
             <Line
               type="monotone"
@@ -167,7 +204,7 @@ export default function PerformanceChart() {
               isAnimationActive={true}
             />
           )}
-          
+
           {(selectedMetric === 'all' || selectedMetric === 'revenue') && (
             <Line
               type="monotone"
@@ -180,7 +217,7 @@ export default function PerformanceChart() {
               isAnimationActive={true}
             />
           )}
-          
+
 
         </LineChart>
       </ResponsiveContainer>
