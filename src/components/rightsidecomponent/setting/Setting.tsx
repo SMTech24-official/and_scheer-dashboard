@@ -4,12 +4,13 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import profileImg from '../../../assets/profile.jpg'
 import ButtonChange from "../../shared/ButtonChange"
-import { useChangePasswordMutation } from "../../../redux/features/auth/auth"
+import { useChangePasswordMutation, useGetCurrentUserQuery } from "../../../redux/features/auth/auth"
 import { toast } from "sonner"
 
 export default function SettingsContent() {
   const [contactMethod, setContactMethod] = useState("Email")
   const [assignRole, setAssignRole] = useState("Admin")
+  const {data:users}=useGetCurrentUserQuery({})
 
   // Forms for each section
   const {
@@ -76,7 +77,8 @@ export default function SettingsContent() {
               <label className="text-sm md:text-[18px] text-black mb-2 block">Profile Picture:</label>
               <div className="relative w-[234px] h-[234px]">
                 <img
-                  src={profileImg}
+                  
+                  src={users?.data?.profilePic || profileImg}
                   alt="Profile"
                   className="w-full h-full object-cover border-neutral-100"
                 />
@@ -88,6 +90,7 @@ export default function SettingsContent() {
               <input
                 {...registerAdminInfo("adminName")}
                 id="adminName"
+                value={users?.data?.fullName || ""}
                 type="text"
                 placeholder="Saifur Rahman"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
@@ -100,7 +103,9 @@ export default function SettingsContent() {
                 {...registerAdminInfo("emailAddress")}
                 id="emailAddress"
                 type="email"
+                value={users?.data?.email || ""}
                 placeholder="ex.saifur.info@gmail.com"
+                readOnly
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
             </div>
@@ -111,6 +116,7 @@ export default function SettingsContent() {
                 {...registerAdminInfo("phoneNumber")}
                 id="phoneNumber"
                 type="tel"
+                
                 placeholder="+880 1967268747"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
