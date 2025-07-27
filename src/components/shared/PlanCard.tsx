@@ -1,4 +1,4 @@
-import { FaCheckCircle, FaUsers } from "react-icons/fa";
+import { FaCheckCircle, FaEuroSign, FaUsers } from "react-icons/fa";
 import { Plan } from "../../types/AllTypes";
 
 
@@ -16,10 +16,12 @@ export default function PlanCard({
     return (
         <div className="md:max-w-[457px] w-full border border-gray-100  bg-white  rounded-lg shadow-md px-8 py-5 flex flex-col">
             {/* Price & Plan Type */}
-            <div className="text-center mb-12">
-                <div>
-                    <span className="text-green-600 text-2xl md:text-4xl font-semibold">
-                        {plan.currency} {plan.amount}
+            <div className="mb-5 md:mb-12">
+
+                <div className="flex items-end">
+
+                    <span className="text-primary text-2xl md:text-4xl xl:text-[56px] font-bold flex items-center">
+                        <FaEuroSign />{plan.amount}
                     </span>
                     {plan.interval ? `/${plan.interval}` : ""}
                 </div>

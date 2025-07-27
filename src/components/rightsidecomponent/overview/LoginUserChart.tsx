@@ -12,18 +12,18 @@ import {
 import { useGetAllUsersQuery } from '../../../redux/features/userManger/userApi';
 
 const performanceData = [
-  { name: 'Jan', sales: 4000, revenue: 2400, users: 1200 },
-  { name: 'Feb', sales: 3000, revenue: 1398, users: 1400 },
-  { name: 'Mar', sales: 2000, revenue: 9800, users: 1600 },
-  { name: 'Apr', sales: 2780, revenue: 3908, users: 1800 },
-  { name: 'May', sales: 1890, revenue: 4800, users: 2000 },
-  { name: 'Jun', sales: 2390, revenue: 3800, users: 2200 },
-  { name: 'Jul', sales: 3490, revenue: 4300, users: 2400 },
-  { name: 'Aug', sales: 4200, revenue: 5200, users: 2600 },
-  { name: 'Sep', sales: 3800, revenue: 4800, users: 2800 },
-  { name: 'Oct', sales: 4500, revenue: 5500, users: 3000 },
-  { name: 'Nov', sales: 4800, revenue: 6200, users: 3200 },
-  { name: 'Dec', sales: 5200, revenue: 6800, users: 3400 },
+  { name: 'Jan', sales: 4000, revenue: 2400 },
+  { name: 'Feb', sales: 3000, revenue: 1398 },
+  { name: 'Mar', sales: 2000, revenue: 9800 },
+  { name: 'Apr', sales: 2780, revenue: 3908 },
+  { name: 'May', sales: 1890, revenue: 4800 },
+  { name: 'Jun', sales: 2390, revenue: 3800 },
+  { name: 'Jul', sales: 3490, revenue: 4300 },
+  { name: 'Aug', sales: 4200, revenue: 5200 },
+  { name: 'Sep', sales: 3800, revenue: 4800 },
+  { name: 'Oct', sales: 4500, revenue: 5500 },
+  { name: 'Nov', sales: 4800, revenue: 6200 },
+  { name: 'Dec', sales: 5200, revenue: 6800 },
 ];
 
 // Custom dot for end points
@@ -41,7 +41,7 @@ const CustomDot: React.FC<CustomDotProps> = (props) => {
     const colors = {
       sales: '#10b981',
       revenue: '#f59e0b',
-      users: '#8b5cf6'
+
     };
 
     return (
@@ -58,7 +58,7 @@ const CustomDot: React.FC<CustomDotProps> = (props) => {
     const colors = {
       sales: '#10b981',
       revenue: '#f59e0b',
-      users: '#8b5cf6'
+
     };
 
     return (
@@ -78,13 +78,12 @@ const CustomDot: React.FC<CustomDotProps> = (props) => {
 export default function PerformanceChart() {
   const [isClient, setIsClient] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState('all');
+const {data:user}=useGetAllUsersQuery();
 
-  const { data: userInfo } = useGetAllUsersQuery();
-  console.log(userInfo?.data);
 
   const calculatePerformanceData = (data:any) => {
     // Group users by month based on createdAt
-    const monthlyData: { [month: string]: { sales: number; revenue: number } } = {};
+    const monthlyData:any = {};
 
     data?.forEach((user:any) => {
       const date = new Date(user.createdAt);
@@ -102,18 +101,22 @@ export default function PerformanceChart() {
     });
 
     // Convert to array format
-    const performanceData = Object.entries(monthlyData)?.map(([name, counts]) => ({
-      name,
-      sales: counts.sales,     // employees
-      revenue: counts.revenue  // job seekers
-    }));
+    const performanceData = Object.entries(monthlyData).map(([name, counts]) => {
+      const typedCounts = counts as { sales: number; revenue: number };
+      return {
+        name,
+        sales: typedCounts.sales,     // employees
+        revenue: typedCounts.revenue  // job seekers
+      };
+    });
 
     return performanceData;
   };
 
   // Calculate the performance data
-  const performanceData = calculatePerformanceData(userInfo?.data);
-
+  const performanceData = calculatePerformanceData(user?.data);
+console.log(performanceData)
+console.log(user?.data)
 
   useEffect(() => {
     setIsClient(true);
@@ -138,8 +141,8 @@ export default function PerformanceChart() {
             className="px-4 py-2 border bg-primary text-white rounded-md border-primary "
           >
             <option value="all">All Metrics</option>
-            <option value="sales">Sales Only</option>
-            <option value="revenue">Revenue Only</option>
+            <option value="sales">Employee</option>
+            <option value="revenue">Job Seeker</option>
 
           </select>
 
