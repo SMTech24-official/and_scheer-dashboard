@@ -12,7 +12,11 @@ export const subscriptionPlanApi = baseUrlApi.injectEndpoints({
       // Transform the API response to return just the data array
       transformResponse: (response: ApiResponse<Plan[]>) => response.data,
     }),
+    getAllTransaction: build.query({
+      query: () => "/transactions",
+    }),
   }),
+  
 });
 
-export const { useGetSubscriptionPlansQuery } = subscriptionPlanApi;
+export const { useGetSubscriptionPlansQuery , useGetAllTransactionQuery} = subscriptionPlanApi;

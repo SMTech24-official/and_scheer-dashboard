@@ -1,0 +1,11 @@
+import { baseUrlApi } from './../../api/baseUrlApi';
+
+const transactionApi = baseUrlApi.injectEndpoints({
+  endpoints: (build) => ({
+    getAllTransaction: build.query({
+      query: () => "/transactions",
+    }),
+  }),
+});
+
+export const { useGetAllTransactionQuery } = transactionApi;

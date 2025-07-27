@@ -2,36 +2,13 @@
 
 import { CgArrowsV } from 'react-icons/cg';
 import { FaBarsStaggered } from "react-icons/fa6";
-
-
-const billingData = [
-  {
-    id: 1,
-    date: 'Jul 02, 2025',
-    planName: 'Pro Plan',
-    planType: 'Job Seeker',
-    userName: 'Rafiq Islam',
-    email: 'rafiq@example.com',
-    payType: 'Card',
-    billingStatus: 'Paid',
-  },
-  {
-    id: 2,
-    date: 'Jul 01, 2025',
-    planName: 'Premium Plan',
-    planType: 'Employer',
-    userName: 'Nusrat Jahan',
-    email: 'nusrat@example.com',
-    payType: 'Paypal',
-    billingStatus: 'Pending',
-  },
-];
+import { useGetAllTransactionQuery } from '../../../redux/features/Subscription/subscriptionSlice';
 
 const BillingStatusBadge = ({ status }: { status: string }) => {
-  const isPaid = status === 'Paid';
-  const bg = isPaid ? 'bg-green-100' : 'bg-yellow-100';
-  const text = isPaid ? 'text-green-800' : 'text-yellow-800';
-  const border = isPaid ? 'border-green-200' : 'border-yellow-200';
+  const isActive = status === 'Active';
+  const bg = isActive ? 'bg-green-100' : 'bg-yellow-100';
+  const text = isActive ? 'text-green-800' : 'text-yellow-800';
+  const border = isActive ? 'border-green-200' : 'border-yellow-200';
 
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bg} ${text} ${border} border`}>
@@ -40,7 +17,19 @@ const BillingStatusBadge = ({ status }: { status: string }) => {
   );
 };
 
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric'
+  });
+}
+
 export default function PaymentHistory() {
+  const { data } = useGetAllTransactionQuery({});
+  const transactions = data?.data || [];
+
   return (
     <div className="md:px-12 mt-8 min-h-screen">
       <div className="py-4 border-gray-200 flex justify-between">
@@ -75,15 +64,15 @@ export default function PaymentHistory() {
           </thead>
 
           <tbody className="divide-y divide-gray-100">
-            {billingData.map((entry) => (
+            {transactions.map((entry: any) => (
               <tr key={entry.id} className="hover:bg-gray-50 transition-colors">
                 <td className="py-4 text-sm md:text-[16px] text-info ml-3">
                   <div className='ml-3'>
-                    {entry.date}
+                    {formatDate(entry.paymentDate)}
                   </div>
                 </td>
                 <td className="py-4 text-sm md:text-[16px] text-info">{entry.planName}</td>
-                <td className="py-4 text-sm md:text-[16px] text-info">{entry.planType}</td>
+                <td className="py-4 text-sm md:text-[16px] text-info">{entry.planType.replace(/_/g, ' ')}</td>
                 <td className="py-4 text-sm md:text-[16px] text-info">{entry.userName}</td>
                 <td className="py-4 text-sm md:text-[16px] text-info">{entry.email}</td>
                 <td className="py-4 text-sm md:text-[16px] text-info">{entry.payType}</td>

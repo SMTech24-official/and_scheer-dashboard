@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import profileImg from '../../../assets/profile.jpg'
 import ButtonChange from "../../shared/ButtonChange"
+import { useChangePasswordMutation } from "../../../redux/features/auth/auth"
 
 export default function SettingsContent() {
   const [contactMethod, setContactMethod] = useState("Email")
@@ -43,8 +44,9 @@ export default function SettingsContent() {
     console.log("Contact Info:", { ...data, contactMethod })
   }
 
+  const[PasswordChange,{isLoading}]=useChangePasswordMutation()
   const onPasswordChangeSubmit = (data: any) => {
-    console.log("Change Password:", data)
+    
   }
 
   return (
