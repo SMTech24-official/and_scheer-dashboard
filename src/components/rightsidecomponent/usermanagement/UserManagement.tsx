@@ -125,7 +125,12 @@ export default function UserManagement() {
                   {/* {
                   row.role=='Employers' &&  <Link to='/dashboard/user-management/company-details'>View Details </Link>
                   } */}
-                 <Link to={`/dashboard/user-management/company-details/${user.id}`}>View Details </Link>
+                  
+                    {user?.role =="EMPLOYEE" && <Link to={`/dashboard/user-management/company-details/${user.id}`}>View Details </Link>}
+                    {user?.role =="JOB_SEEKER" && <Link to={`/dashboard/user-management/seeker-details/${user.id}`}>View Details </Link>}
+                  
+                 
+           
                 </td>
               </tr>
             ))}
