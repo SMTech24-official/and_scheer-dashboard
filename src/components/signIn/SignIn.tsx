@@ -34,7 +34,7 @@ const navigate =useNavigate();
       if(response?.data.success as boolean){
          toast.success("Login successful") 
          Cookies.set("accessToken", response?.data.data.accessToken);
-        navigate("/dashboard")
+        navigate("/dashboard/overview")
       }
       
     } catch (error) {

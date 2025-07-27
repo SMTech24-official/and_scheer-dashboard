@@ -5,14 +5,17 @@ import SideBar from './navigationBar/SiderBar';
 import TopBar from './navigationBar/TopBar';
 import BreadCrumb from '../BreadCrumb';
 import { navLink } from './Navlink';
+import { useGetCurrentUserQuery } from '../../redux/features/auth/auth';
 
 
 
 
 const DashboardLayout = () => {
-    const user = null
+   
     const [isOpen, setIsOpen] = useState(false)
     const [isShort, setIsShort] = useState(true)
+    const [user, setUser] = useState(null);
+
 
     const navRef = useRef<HTMLDivElement>(null)
 
@@ -31,7 +34,13 @@ const DashboardLayout = () => {
     }, [navRef])
 
 
-
+const {data:users}=useGetCurrentUserQuery({})
+console.log("users:", users?.data)
+    useEffect(() => {
+        if (users?.data) {
+            setUser(users.data)
+        }
+    }, [users?.data])
 
 
     return (

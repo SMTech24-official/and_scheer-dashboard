@@ -14,3 +14,20 @@ export type User = {
   iat: number;
   exp: number;
 };
+
+export type UserT = {
+    id?:                  string;
+    firstName?:           string;
+    lastName?:            string;
+    fullName?:            string;
+    email?:               string;
+    profilePic?:          string;
+    role?:                string;
+    isVerified?:          boolean;
+    isSubscribed?:        boolean;
+    companyName?:         string;
+    joiningDate?:         null;
+    planExpiration?:      null;
+    subscriptionType?:    null;
+    totalPayPerJobCount?: number;
+}
