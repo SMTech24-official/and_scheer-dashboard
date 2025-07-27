@@ -11,7 +11,6 @@ export default function UserManagement() {
   const [selectedMetric, setSelectedMetric] = useState('All User');
   const [userData, setUserData] = useState<any[]>([]);
   const { data: userdata } = useGetAllUsersQuery();
-  console.log("usersManager data:", userdata?.data);
 
   useEffect(() => {
     if (userdata?.data) {

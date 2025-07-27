@@ -35,7 +35,6 @@ const DashboardLayout = () => {
 
 
 const {data:users}=useGetCurrentUserQuery({})
-console.log("users:", users?.data)
     useEffect(() => {
         if (users?.data) {
             setUser(users.data)

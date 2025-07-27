@@ -1,19 +1,19 @@
 'use client';
+import { CgArrowsV } from "react-icons/cg";
 import { Link } from "react-router-dom";
 import { useGetAllTransactionQuery } from "../../../redux/features/Subscription/subscriptionSlice";
-import { CgArrowsV } from "react-icons/cg";
-const StatusBadge = ({ status }: { status: string }) => {
-  const isSuccess = status === 'success';
-  return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border 
-      ${isSuccess
-        ? 'border-green-200 bg-green-100 text-green-800'
-        : 'border-yellow-200 bg-yellow-100 text-yellow-800'
-      }`}>
-      {status}
-    </span>
-  );
-};
+// const StatusBadge = ({ status }: { status: string }) => {
+//   const isSuccess = status === 'success';
+//   return (
+//     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border 
+//       ${isSuccess
+//         ? 'border-green-200 bg-green-100 text-green-800'
+//         : 'border-yellow-200 bg-yellow-100 text-yellow-800'
+//       }`}>
+//       {status}
+//     </span>
+//   );
+// };
 
 export default function SimpleSubmissionLogsTable() {
 

@@ -1,11 +1,11 @@
   "use client"
 
-  import { CgPhone } from "react-icons/cg"
+  import { useEffect, useState } from "react"
+import { CgPhone } from "react-icons/cg"
 import { CiLocationOn } from "react-icons/ci"
 import { MdEmail } from "react-icons/md"
 import { useParams } from "react-router-dom"
-import { useGetAllCompaniesQuery, useGetCompanyByIdQuery } from "../../../redux/features/company/companySlice"
-import { useEffect, useState } from "react"
+import { useGetAllCompaniesQuery } from "../../../redux/features/company/companySlice"
 
   export default function CompanyDetails() {
     const { id } = useParams();

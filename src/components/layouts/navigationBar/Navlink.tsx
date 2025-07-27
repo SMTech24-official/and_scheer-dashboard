@@ -2,9 +2,11 @@ import { useState } from "react"; // Import useState for managing dropdown state
 import { IoLogOut } from "react-icons/io5";
 import { LuChevronsLeft, LuChevronsRight } from "react-icons/lu";
 import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from "react-icons/md";
-import { Link, useLocation } from "react-router-dom"; // Use react-router-dom instead of react-router
+import { Link, useLocation, useNavigate } from "react-router-dom"; // Use react-router-dom instead of react-router
 import type { NavLink } from "../types";
 import Logo from "../../shared/Logo";
+import Cookies from "js-cookie"; // Import js-cookie for cookie management
+import { toast } from "sonner";
 
 interface MainNavLinkProps {
     navLink: NavLink[];
@@ -42,9 +44,20 @@ export default function MainNavLink({
     };
 
     // Handle logout
+    const navigate=useNavigate()
     const handleLogout = async () => {
-        // Add your logout logic here
-        console.log("Logging out...");
+        try {
+            // Add your logout logic here, e.g., clearing tokens, redirecting, etc.
+            Cookies.remove("accessToken");
+
+        
+            navigate("/")
+            ; // Redirect to the login page after logout
+            toast.success("Logged out successfully");
+
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
     };
 
     // Toggle dropdown

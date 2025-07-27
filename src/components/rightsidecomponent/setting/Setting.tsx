@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import profileImg from '../../../assets/profile.jpg'
 import ButtonChange from "../../shared/ButtonChange"
 import { useChangePasswordMutation } from "../../../redux/features/auth/auth"
+import { toast } from "sonner"
 
 export default function SettingsContent() {
   const [contactMethod, setContactMethod] = useState("Email")
@@ -44,8 +45,23 @@ export default function SettingsContent() {
     console.log("Contact Info:", { ...data, contactMethod })
   }
 
-  const[PasswordChange,{isLoading}]=useChangePasswordMutation()
-  const onPasswordChangeSubmit = (data: any) => {
+  const[PasswordChange,]=useChangePasswordMutation()
+  const onPasswordChangeSubmit = async(data: any) => {
+    try {
+      const response= await PasswordChange(data)
+
+      if(response?.data.success as boolean){
+        toast.success("Password changed successfully")  
+      }
+      
+
+      
+
+    } catch (error) {
+      toast.error("Failed to change password")
+      console.error("Password change error:", error);
+      
+    }
     
   }
 
