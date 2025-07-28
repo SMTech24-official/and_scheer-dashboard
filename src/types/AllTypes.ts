@@ -148,6 +148,24 @@ export interface User {
   isVerified?: boolean;
 
 }
+
+export type UserManager = {
+    id?:                  string;
+    email?:               string;
+    fullName?:            string;
+    profilePic?:          string;
+    role?:                string;
+    isSubscribed?:        boolean;
+    companyName?:         string;
+    joiningDate?:         null;
+    planExpiration?:      Date | null;
+    subscriptionType?:    null | string;
+    totalPayPerJobCount?: number;
+    isVerified?:          boolean;
+    createdAt?:           Date;
+    updatedAt?:           Date;
+}
+
 export interface UserListResponse {
   success: boolean;
   message: string;
@@ -159,7 +177,7 @@ export interface UserListResponse {
     total: number;
     totalPage: number;
     },
-  data: User[];
+  data: UserManager[];
 }
 export interface UserResponse {
   success: boolean;
@@ -317,6 +335,27 @@ export type Meta = {
     total?:     number;
     totalPage?: number;
 }
+
+export type TransactionResponce = {
+    success?:    boolean;
+    statusCode?: number;
+    message?:    string;
+    meta?:       Meta;
+    data?:       Transaction[];
+}
+
+export type Transaction = {
+    id?:            string;
+    paymentDate?:   Date;
+    planName?:      string;
+    planType?:      string;
+    userName?:      string;
+    email?:         string;
+    payType?:       string;
+    billingStatus?: string;
+}
+
+
 
 
 

@@ -26,7 +26,7 @@ const RouterProvider: React.FC = () => {
                     <Route path="payment-history" element={<PaymentHistory />} />
                     <Route path="user-management/company-details/:id" element={<CompanyDetails />} />
                     <Route path="user-management/seeker-details/:id" element={<ProfilePage />} />
-                    <Route path="job-management/job-details" element={<JobDetails />} />
+                    <Route path="job-management/job-details/:id" element={<JobDetails />} />
                     <Route path="setting" element={<Setting />} />                   
                     <Route path="*" element={<NotFound />} />
                 </Route>

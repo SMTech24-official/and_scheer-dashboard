@@ -1,24 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CgArrowsV } from 'react-icons/cg';
 import { Link } from 'react-router-dom';
 import { useGetAllUsersQuery } from '../../../redux/features/userManger/userApi';
 import Pagination from './PaginationBar';
-
-
-
+import { format } from 'date-fns';
 
 export default function UserManagement() {
-
   const [selectedMetric, setSelectedMetric] = useState('All User');
-
+  const [userData, setUserData] = useState<any[]>([]);
   const { data: userdata } = useGetAllUsersQuery();
-  console.log("Companies data:", userdata?.data);
 
+  useEffect(() => {
+    if (userdata?.data) {
+      setUserData(userdata.data);
+    }
+  }, [userdata?.data]);
 
   const [currentPage, setCurrentPage] = useState(userdata?.meta.page || 1);
 
+  // Filter users based on selectedMetric
+  const filteredUsers = userData.filter((user) => {
+    if (selectedMetric === "All User") return true;
+    if (selectedMetric === "Job Seeker") return user.role === "JOB_SEEKER";
+    if (selectedMetric === "Employee/Company") return user.role === "EMPLOYEE";
+    return true;
+  });
 
   return (
     <div className="md:px-12 min-h-screen mt-8">
@@ -30,14 +38,12 @@ export default function UserManagement() {
             <select
               value={selectedMetric}
               onChange={(e) => setSelectedMetric(e.target.value)}
-              className="px-4 py-2 border bg-background-dark text-white rounded-md   "
+              className="px-4 py-2 border bg-background-dark text-white rounded-md"
             >
               <option value="All User">All User</option>
               <option value="Job Seeker">Job Seeker</option>
               <option value="Employee/Company">Employee/Company</option>
-
             </select>
-
           </div>
         </div>
       </div>
@@ -47,44 +53,44 @@ export default function UserManagement() {
         <table className="w-full min-w-[900px]">
           {/* Table Header */}
           <thead className="bg-primary ">
-            <tr className=''>
+            <tr>
               <th className="font-normal py-3 text-left text-base lg:text-xl text-white">
-                <div className="flex items-center font-normal   ml-3 ">
+                <div className="flex items-center font-normal ml-3 ">
                   Joining Date & Time
                   <CgArrowsV className="my-auto ml-1" />
                 </div>
               </th>
-              <th className=" py-3 text-left text-base lg:text-xl text-white">
+              <th className="py-3 text-left text-base lg:text-xl text-white">
                 <div className="flex items-center font-normal ">
                   User Name
                   <CgArrowsV className="my-auto ml-1" />
                 </div>
               </th>
-              <th className=" py-3 text-left text-base lg:text-xl text-white">
+              <th className="py-3 text-left text-base lg:text-xl text-white">
                 <div className="flex items-center font-normal ">
                   Email Address
                   <CgArrowsV className="my-auto ml-1" />
                 </div>
               </th>
-              <th className=" py-3 text-left text-base lg:text-xl text-white">
+              <th className="py-3 text-left text-base lg:text-xl text-white">
                 <div className="flex items-center font-normal ">
                   Company Name
                   <CgArrowsV className="my-auto ml-1" />
                 </div>
               </th>
-              <th className=" py-3 text-left text-base lg:text-xl text-white">
+              <th className="py-3 text-left text-base lg:text-xl text-white">
                 <div className="flex items-center font-normal ">
                   Role
                   <CgArrowsV className="my-auto ml-1" />
                 </div>
               </th>
-              <th className=" py-3 text-left text-base lg:text-xl text-white">
+              <th className="py-3 text-left text-base lg:text-xl text-white">
                 <div className="flex items-center font-normal ">
                   Status
                   <CgArrowsV className="my-auto ml-1" />
                 </div>
               </th>
-              <th className=" py-3 text-left text-base lg:text-xl text-white">
+              <th className="py-3 text-left text-base lg:text-xl text-white">
                 <div className="flex items-center font-normal ">
                   Action
                   <CgArrowsV className="my-auto ml-1" />
@@ -95,42 +101,35 @@ export default function UserManagement() {
 
           {/* Table Body */}
           <tbody className="divide-y divide-gray-100">
-            {userdata?.data.map((user) => (
+            {filteredUsers.map((user) => (
               <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                <td className=" py-4 text-sm md:text-[16px] text-info ">
+                <td className="py-4 text-sm md:text-[16px] text-info">
                   <div className='ml-3'>
-                    {/* {row.timestamp} */}
+                    {user.createdAt ? format(new Date(user.createdAt), 'dd MMM yyyy') : 'N/A'}
                   </div>
-
                 </td>
-                <td className=" py-4 text-sm md:text-[16px] text-info">
+                <td className="py-4 text-sm md:text-[16px] text-info">
                   {user.fullName}
                 </td>
-                <td className=" py-4 text-sm md:text-[16px] text-info">
+                <td className="py-4 text-sm md:text-[16px] text-info">
                   {user.email}
                 </td>
-                <td className=" py-4 text-sm md:text-[16px] text-info">
-                  {/* {row.projectName} */}
+                <td className="py-4 text-sm md:text-[16px] text-info">
+                  {user.companyName}
                 </td>
-                <td className=" py-4 text-sm md:text-[16px] text-info">
+                <td className="py-4 text-sm md:text-[16px] text-info">
                   {user.role}
                 </td>
-                <td className=" py-4 text-sm md:text-[16px] text-info">
-                  {/* <StatusBadge status={row.status} /> */}
+                <td className="py-4 text-sm md:text-[16px] text-info">
+                  {/* Status badge or info here */}
                 </td>
-                <td className=" py-4 text-sm md:text-[16px] text-info cursor-pointer">
-                  {/* {
-                  row.role=='Job Seeker' &&  <Link to='/dashboard/user-management/seekers-details'>View Details </Link>
-                  } */}
-                  {/* {
-                  row.role=='Employers' &&  <Link to='/dashboard/user-management/company-details'>View Details </Link>
-                  } */}
-                  
-                    {user?.role =="EMPLOYEE" && <Link to={`/dashboard/user-management/company-details/${user.id}`}>View Details </Link>}
-                    {user?.role =="JOB_SEEKER" && <Link to={`/dashboard/user-management/seeker-details/${user.id}`}>View Details </Link>}
-                  
-                 
-           
+                <td className="py-4 text-sm md:text-[16px] text-info cursor-pointer">
+                  {user?.role === "EMPLOYEE" && (
+                    <Link to={`/dashboard/user-management/company-details/${user.id}`}>View Details</Link>
+                  )}
+                  {user?.role === "JOB_SEEKER" && (
+                    <Link to={`/dashboard/user-management/seeker-details/${user.id}`}>View Details</Link>
+                  )}
                 </td>
               </tr>
             ))}
@@ -143,7 +142,6 @@ export default function UserManagement() {
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />
-
     </div>
   );
 }

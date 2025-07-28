@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { LuMenu, LuX } from "react-icons/lu";
-import type { User, UserT } from "../types";
 import { Link } from "react-router-dom";
+import type { UserT } from "../types";
 
 export default function TopBar({
     isOpen,

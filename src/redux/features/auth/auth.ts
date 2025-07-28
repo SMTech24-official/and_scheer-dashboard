@@ -29,6 +29,14 @@ const authApi = baseUrlApi.injectEndpoints({
       }),
     }),
 
+    // make admin
+    makeAdmin: build.mutation({
+      query: (email) => ({
+        url: `/users/make-admin/${email}`,
+        method: "PATCH",
+      }),
+    }),
+
     // forgetPassword
     resetPassword: build.mutation({
       query: (resetData) => ({
@@ -45,12 +53,36 @@ const authApi = baseUrlApi.injectEndpoints({
         method: "GET",
       }),
     }),
+// Update Contact Info
+    updateContactInfo: build.mutation({
+      query: (contactInfo) => ({
+        url: "/users/contact-info",
+        method: "PATCH",
+        body: contactInfo,
+      }),
+    }),
+
+
+
+
+
+    // changePassword
+    changePassword: build.mutation({
+      query: (changePasswordData) => ({
+        url: "/auth/change-password",
+        method: "PUT",
+        body: changePasswordData,
+      }),
+    }),
   }),
 });
 
 export const {
+  useUpdateContactInfoMutation,
+  useMakeAdminMutation,
   useSignUpMutation,
   useSignInMutation,
+  useChangePasswordMutation,
   useForgetPasswordMutation,
   useResetPasswordMutation,
   useGetCurrentUserQuery
