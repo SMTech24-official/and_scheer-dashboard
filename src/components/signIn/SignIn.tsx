@@ -43,7 +43,7 @@ console.log(User,"User Data");
       const decoded:any = jwtDecode(response?.data.data.accessToken);
       console.log("Decoded JWT:", decoded);
       // decoded role super_admin or admin not equal toast message and redirect to login page 
-      if (decoded.role !== "SUPER_ADMIN" && decoded.role !== "admin") {
+      if (decoded.role !== "SUPER_ADMIN" && decoded.role !== "ADMIN") {
         toast.error("You are not authorized to access this page.");
        
         navigate("/");

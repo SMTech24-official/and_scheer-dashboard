@@ -3,12 +3,48 @@
 import { useEffect, useState } from "react";
 import { CiLocationOn } from "react-icons/ci"
 import { useParams } from "react-router-dom";
-import { useGetAllJobPostsQuery } from "../../../redux/features/job/jobSlice";
+import { useDeleteJobPostMutation, useGetAllJobPostsQuery, useSuspendJobPostMutation } from "../../../redux/features/job/jobSlice";
+import { toast } from "sonner";
 
 export default function JobDetails() {
   const { id } = useParams();
   const { data: job, isLoading } = useGetAllJobPostsQuery();
   const [jobData, setJobData] = useState<any>(null);
+
+
+  // Mutation for deleting a job post
+  const [deleteId] = useDeleteJobPostMutation();
+  const handleDeleteJob = async () => {
+    if (id) {
+      try {
+        const response = await deleteId(id);
+        if (response?.data.success) {
+          toast.success("Job deleted successfully");
+        } else {
+          toast.error("Failed to delete job");
+        }
+      } catch (error) {
+        toast.error("An error occurred while deleting the job");
+      }
+    }
+  };
+
+  // suspend job post
+  const [suspendJobPost] = useSuspendJobPostMutation();
+  const handleSuspendJob = async () => {
+    if (id) {
+      try {
+        const response = await suspendJobPost(id);
+        if (response?.data.success) {
+          toast.success("Job suspended successfully");
+        } else {
+          toast.error("Failed to suspend job");
+        }
+      } catch (error) {
+        toast.error("An error occurred while suspending the job");
+      }
+    }
+  };
 
   useEffect(() => {
     if (job?.data.data && id) {
@@ -51,6 +87,9 @@ export default function JobDetails() {
 
   const formattedDeadline = deadline ? new Date(deadline).toLocaleDateString() : "";
   const formattedCreatedAt = createdAt ? new Date(createdAt).toLocaleDateString() : "";
+
+
+
 
   return (
     <div className="min-h-screen p-6 w-full">
@@ -103,16 +142,23 @@ export default function JobDetails() {
                 </div>
                 {/* Salary */}
                 <div className="mt-4">
-                  <span className="text-3xl font-bold text-green-600">{salaryRange}</span>
+                  <span className="md:text-3xl text-2xl font-bold text-green-600 ">{salaryRange}</span>
                   <span className="text-lg text-gray-600 ml-1">/{salaryType?.charAt(0).toUpperCase() + salaryType?.slice(1)}</span>
                 </div>
               </div>
             </div>
             <div className="flex space-x-3 mt-4 lg:mt-0">
-              <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+              <button
+              onClick={handleSuspendJob}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium flex">
                 {status === "ACTIVE" ? "Suspend Job" : "Activate Job"}
               </button>
-              <button className="border border-red-500 text-red-500 hover:bg-red-50 px-4 py-2 rounded-md text-sm font-medium">
+              <button 
+                onClick={handleDeleteJob}
+                
+            
+
+               className="border border-red-500 text-red-500 hover:bg-red-50 px-4 py-2 rounded-md text-sm font-medium">
                 Delete Job
               </button>
             </div>

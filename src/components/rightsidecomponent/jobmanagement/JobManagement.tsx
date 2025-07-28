@@ -1,57 +1,32 @@
-'use client';
+import { useEffect, useState } from "react";
+import { useGetAllJobPostsQuery } from "../../../redux/features/job/jobSlice";
+import { Link } from "react-router-dom";
+import Pagination from "../usermanagement/PaginationBar";
+import { CgArrowsV } from "react-icons/cg";
 
-import { useEffect, useState } from 'react';
-import { CgArrowsV } from 'react-icons/cg';
-import { Link } from 'react-router-dom';
-import { useGetAllJobPostsQuery } from '../../../redux/features/job/jobSlice';
-import Pagination from '../usermanagement/PaginationBar';
-
-
-// const jobData = [
-//   {
-//     id: 'J-1001',
-//     postingDate: 'Jun 28, 2025',
-//     companyName: 'TechNova Inc.',
-//     position: 'Frontend Developer',
-//     salaryRange: '$60,000 - $75,000',
-//     status: 'Open',
-//     applicants: 42,
-//     deadline: 'Jul 10, 2025',
-//     time: '10:00 AM',
-//   },
-//   {
-//     id: 'J-1002',
-//     postingDate: 'Jun 27, 2025',
-//     companyName: 'Green Solutions',
-//     position: 'Project Manager',
-//     salaryRange: '$80,000 - $95,000',
-//     status: 'Closed',
-//     applicants: 67,
-//     deadline: 'Jul 05, 2025',
-//     time: '03:00 PM',
-//   },
-// ];
+// StatusBadge now supports more statuses and colors
+const statusStyles: Record<string, { bg: string; text: string; border: string }> = {
+  ACTIVE:    { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-200' },
+  SUSPENDED: { bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-200' },
+  DELETED:   { bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-200' },
+  CLOSED:    { bg: 'bg-gray-100', text: 'text-gray-800', border: 'border-gray-200' },
+  OPEN:      { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-200' },
+};
 
 const StatusBadge = ({ status }: { status: string }) => {
-  const isOpen = status === 'Open';
-  const bg = isOpen ? 'bg-green-100' : 'bg-red-100';
-  const text = isOpen ? 'text-green-800' : 'text-red-800';
-  const border = isOpen ? 'border-green-200' : 'border-red-200';
-
+  const style = statusStyles[status.toUpperCase()] || { bg: 'bg-gray-100', text: 'text-gray-800', border: 'border-gray-200' };
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bg} ${text} ${border} border`}>
-      {status}
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${style.bg} ${style.text} ${style.border} border`}>
+      {status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()}
     </span>
   );
 };
 
 export default function JobManagement() {
-  const [selectedMetric, setSelectedMetric] = useState('All Jobs');
+  const [selectedMetric, setSelectedMetric] = useState('All Posted Jobs');
   const itemsPerPage = 11;
   const [currentPage, setCurrentPage] = useState(1);
-  const {data:jobsdata,}=useGetAllJobPostsQuery()
-  console.log("Job data:", jobsdata?.data.data);
-  // Transform jobsdata to table format
+  const { data: jobsdata } = useGetAllJobPostsQuery();
   const [tableJobs, setTableJobs] = useState<any[]>([]);
 
   useEffect(() => {
@@ -63,8 +38,8 @@ export default function JobManagement() {
         companyName: job.company?.companyName || '',
         position: job.title,
         salaryRange: job.salaryRange,
-        status: job.status === 'Active' ? 'Open' : 'Closed',
-        applicants: job.applicantsCount || 0,
+        status: job.status, // Use the original status string
+        applicants: job.noOfApplicants ?? job.applicantsCount ?? 0,
         deadline: job.deadline ? new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
         time: job.deadline ? new Date(job.deadline).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '',
         jobId: job.id,
@@ -72,15 +47,16 @@ export default function JobManagement() {
 
       // Filter by selectedMetric
       if (selectedMetric === 'Open Jobs') {
-        mappedJobs = mappedJobs.filter((job: any) => job.status === 'Open');
+        mappedJobs = mappedJobs.filter((job: any) => job.status === 'ACTIVE');
       } else if (selectedMetric === 'Closed Jobs') {
-        mappedJobs = mappedJobs.filter((job: any) => job.status === 'Closed');
+        mappedJobs = mappedJobs.filter((job: any) => job.status === 'DELETED' || job.status === 'SUSPENDED' || job.status === 'CLOSED');
       }
       setTableJobs(mappedJobs);
     }
   }, [selectedMetric, jobsdata]);
 
-  // Use tableJobs for rendering
+  // ...rest of your component remains unchanged
+ // Use tableJobs for rendering
   const jobsToShow = tableJobs.length > 0 ? tableJobs : [];
   console.log("Jobs to show:", jobsToShow);
 

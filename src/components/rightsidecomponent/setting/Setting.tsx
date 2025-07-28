@@ -4,11 +4,11 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import profileImg from '../../../assets/profile.jpg'
 import ButtonChange from "../../shared/ButtonChange"
-import { useChangePasswordMutation, useGetCurrentUserQuery } from "../../../redux/features/auth/auth"
+import { useChangePasswordMutation, useGetCurrentUserQuery, useMakeAdminMutation, useUpdateContactInfoMutation } from "../../../redux/features/auth/auth"
 import { toast } from "sonner"
 
 export default function SettingsContent() {
-  const [contactMethod, setContactMethod] = useState("Email")
+  const [preferredContactMethod, setPreferredContactMethod] = useState("phone")
   const [assignRole, setAssignRole] = useState("Admin")
   const {data:users}=useGetCurrentUserQuery({})
 
@@ -37,17 +37,58 @@ export default function SettingsContent() {
   const onAdminInfoSubmit = (data: any) => {
     console.log("Admin Info:", data)
   }
+  const [makeAdmin,{isError,isSuccess , data:res}] = useMakeAdminMutation()
 
   const onInviteAdminSubmit = (data: any) => {
-    console.log("Invite Admin:", { ...data, assignRole })
+   
+    try {
+     
+      makeAdmin(data.inviteEmail)
+      if(isSuccess && res?.success){
+        toast.success("Admin invited successfully")
+      }
+      if(isError){
+        toast.error("Failed to invite admin")
+      }
+
+    } catch (error) {
+      
+      toast.error("Failed to invite admin")
+      console.error("Invite admin error:", error);
+    }
+
+  }
+const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdateContactInfoMutation()
+  const onContactInfoSubmit = (data: any) => {
+    console.log("Contact Info:", { ...data, preferredContactMethod });
+ try {
+  
+      contactdata({ ...data, preferredContactMethod })
+      if(isSuccessContact){
+        toast.success("Contact information updated successfully")
+      }
+      if(isErrorContact){
+        toast.error("Failed to update contact information")
+      }
+
+ } catch (error) {
+  
+      toast.error("Failed to update contact information")
+      console.error("Contact info error:", error);
+    
+      
+ }
+
+
+
+
+
   }
 
-  const onContactInfoSubmit = (data: any) => {
-    console.log("Contact Info:", { ...data, contactMethod })
-  }
 
   const[PasswordChange,]=useChangePasswordMutation()
   const onPasswordChangeSubmit = async(data: any) => {
+    console.log("Password Change:", data)
     try {
       const response= await PasswordChange(data)
 
@@ -130,7 +171,7 @@ export default function SettingsContent() {
 
         {/* Invite Admin Section */}
         <form onSubmit={handleInviteAdminSubmit(onInviteAdminSubmit)} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-12">
-          <h2 className="text-lg md:text-2xl text-black font-semibold">Invite Admin</h2>
+          <h2 className="text-lg md:text-2xl text-black font-semibold">Make Admin</h2>
           <div className="pt-6 space-y-6">
             <div>
               <label htmlFor="inviteEmail" className="text-sm md:text-[18px] text-black mb-2 block">Enter Email:</label>
@@ -143,7 +184,7 @@ export default function SettingsContent() {
               />
             </div>
 
-            <div>
+            {/* <div>
               <label htmlFor="assignRole" className="text-sm md:text-[18px] text-black mb-2 block">Assign Role:</label>
               <div className="relative">
                 <select
@@ -162,7 +203,7 @@ export default function SettingsContent() {
                   </svg>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <p className="text-end">
               <ButtonChange type="submit" title="Invite Now" />
@@ -180,10 +221,10 @@ export default function SettingsContent() {
           </p>
           <div className="pt-6 space-y-6">
             <div>
-              <label htmlFor="businessAddress" className="text-sm md:text-[18px] text-black mb-2 block">Business Address:</label>
+              <label htmlFor="address" className="text-sm md:text-[18px] text-black mb-2 block">Business Address:</label>
               <textarea
-                {...registerContactInfo("businessAddress")}
-                id="businessAddress"
+                {...registerContactInfo("address")}
+                id="address"
                 rows={3}
                 placeholder="Section-06, House-70/80..."
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md resize-none"
@@ -215,17 +256,17 @@ export default function SettingsContent() {
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="contactMethod" className="text-sm md:text-[18px] text-black mb-2 block">Preferred Contact Method:</label>
+                <label htmlFor="preferredContactMethod" className="text-sm md:text-[18px] text-black mb-2 block">Preferred Contact Method:</label>
                 <div className="relative">
                   <select
-                    id="contactMethod"
-                    value={contactMethod}
-                    onChange={(e) => setContactMethod(e.target.value)}
+                    id="preferredContactMethod"
+                    value={preferredContactMethod}
+                    onChange={(e) => setPreferredContactMethod(e.target.value)}
                     className="w-full px-[17px] py-4 border border-gray-300 rounded-md appearance-none bg-white"
                   >
-                    <option value="Email">Email</option>
+                  
                     <option value="Phone">Phone</option>
-                    <option value="SMS">SMS</option>
+                  
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                     <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -234,16 +275,17 @@ export default function SettingsContent() {
                   </div>
                 </div>
               </div>
-              <div>
-                <label htmlFor="emailAddr" className="text-sm md:text-[18px] text-black mb-2 block">Email Address:</label>
-                <input
-                  {...registerContactInfo("emailAddr")}
-                  id="emailAddr"
-                  type="email"
-                  placeholder="contact@example.com"
-                  className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
-                />
-              </div>
+                <div>
+              <label htmlFor="phoneNumber" className="text-sm md:text-[18px] text-black mb-2 block">Phone Number:</label>
+              <input
+                {...registerContactInfo("phone")}
+                id="phone"
+                type="tel"
+                
+                placeholder="+880 1967268747"
+                className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
+              />
+            </div>
             </div>
 
             <p className="text-end">
