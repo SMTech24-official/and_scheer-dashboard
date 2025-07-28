@@ -34,7 +34,7 @@ export default function SimpleSubmissionLogsTable() {
         <div className="min-w-[1100px]">
           {/* Table Header */}
           <div className="bg-primary px-6 rounded-t-lg">
-            <div className="grid grid-cols-8 gap-4 py-3 text-white text-md  lg:text-xl ">
+            <div className="grid grid-cols-7 gap-4 py-3 text-white text-md  lg:text-xl ">
               <div className="col-span-1 flex items-center">Date <CgArrowsV className="my-auto ml-1" /></div>
               <div className="col-span-1 flex items-center">Plan Name<CgArrowsV className="my-auto ml-1" /></div>
               <div className="col-span-1 flex items-center">Plan type <CgArrowsV className="my-auto ml-1" /></div>

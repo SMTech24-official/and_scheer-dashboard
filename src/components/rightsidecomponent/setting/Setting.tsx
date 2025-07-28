@@ -9,7 +9,7 @@ import { toast } from "sonner"
 
 export default function SettingsContent() {
   const [preferredContactMethod, setPreferredContactMethod] = useState("phone")
-  const [assignRole, setAssignRole] = useState("Admin")
+  // const [assignRole, setAssignRole] = useState("Admin")
   const {data:users}=useGetCurrentUserQuery({})
 
   // Forms for each section
