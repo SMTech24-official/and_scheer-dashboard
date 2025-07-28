@@ -82,6 +82,7 @@ export default function JobManagement() {
 
   // Use tableJobs for rendering
   const jobsToShow = tableJobs.length > 0 ? tableJobs : [];
+  console.log("Jobs to show:", jobsToShow);
 
   return (
     <div className="md:px-12 min-h-screen mt-8">
@@ -149,7 +150,7 @@ export default function JobManagement() {
                 <td className="py-4 text-sm md:text-[16px] text-info">{job.deadline}</td>
                 <td className="py-4 text-sm md:text-[16px] text-info">{job.time}</td>
                 <td className="py-4 text-sm md:text-[16px] text-info cursor-pointer hover:underline text-primary">
-                  <Link to='/dashboard/job-management/job-details'>View</Link>
+                  <Link to={`/dashboard/job-management/job-details/${job.jobId}`}>View</Link>
                 </td>
               </tr>
             ))}
