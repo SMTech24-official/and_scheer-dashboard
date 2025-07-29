@@ -2,14 +2,13 @@
 
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import profileImg from '../../../assets/profile.jpg'
-import ButtonChange from "../../shared/ButtonChange"
-import { useChangePasswordMutation, useGetCurrentUserQuery, useMakeAdminMutation, useUpdateContactInfoMutation } from "../../../redux/features/auth/auth"
 import { toast } from "sonner"
+import profileImg from '../../../assets/profile.jpg'
+import { useChangePasswordMutation, useGetCurrentUserQuery, useMakeAdminMutation, useUpdateContactInfoMutation } from "../../../redux/features/auth/auth"
+import ButtonChange from "../../shared/ButtonChange"
 
 export default function SettingsContent() {
   const [preferredContactMethod, setPreferredContactMethod] = useState("phone")
-  const [assignRole, setAssignRole] = useState("Admin")
   const {data:users}=useGetCurrentUserQuery({})
 
   // Forms for each section
@@ -117,12 +116,21 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
             <div>
               <label className="text-sm md:text-[18px] text-black mb-2 block">Profile Picture:</label>
               <div className="relative w-[234px] h-[234px]">
-                <img
+                
+                  <img
                   
                   src={users?.data?.profilePic || profileImg}
                   alt="Profile"
                   className="w-full h-full object-cover border-neutral-100"
                 />
+                
+                <input type="file"
+                
+                 {...registerAdminInfo("adminPhoto")}
+                 id=""
+                 className=""
+                 
+                 />
               </div>
             </div>
 
@@ -151,7 +159,7 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
               />
             </div>
 
-            <div>
+            {/* <div>
               <label htmlFor="phoneNumber" className="text-sm md:text-[18px] text-black mb-2 block">Phone Number:</label>
               <input
                 {...registerAdminInfo("phoneNumber")}
@@ -161,7 +169,7 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
                 placeholder="+880 1967268747"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
-            </div>
+            </div> */}
 
             <p className="text-end">
               <ButtonChange type="submit"  />

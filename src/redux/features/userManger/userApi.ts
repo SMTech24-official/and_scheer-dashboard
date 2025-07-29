@@ -16,6 +16,11 @@ const usersAPI = baseUrlApi.injectEndpoints({
             body: data,
         }),
         }),
+        getProfileById:builder.query({
+            query:(id)=>`/profiles/${id}`
+        }),
+
+
         updateUser: builder.mutation({
         query: ({ id, data }) => ({
             url: `users/update${id}`,
@@ -23,9 +28,22 @@ const usersAPI = baseUrlApi.injectEndpoints({
             body: data,
         }),
         }),
+
+        // susped
+
+         profileSuspend: builder.mutation({
+        query: (id) => ({
+            url: `/users/suspend/${id}`,
+            method: "PATCH",
+         
+        }),
+        }),
+
+
+
         deleteUser: builder.mutation({
         query: (id) => ({
-            url: `/users/${id}`,
+            url: `/users/delete/${id}`,
             method: "DELETE",
         }),
         }),
@@ -33,6 +51,8 @@ const usersAPI = baseUrlApi.injectEndpoints({
 });
 
 export const {
+    useProfileSuspendMutation,
+    useGetProfileByIdQuery,
     useGetAllUsersQuery,
     useGetUserByIdQuery,
     useCreateUserMutation,

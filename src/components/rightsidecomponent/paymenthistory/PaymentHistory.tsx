@@ -1,7 +1,6 @@
 'use client';
 
 import { CgArrowsV } from 'react-icons/cg';
-import { FaBarsStaggered } from "react-icons/fa6";
 import { useGetAllTransactionQuery } from '../../../redux/features/Subscription/subscriptionSlice';
 
 const BillingStatusBadge = ({ status }: { status: string }) => {
@@ -48,7 +47,7 @@ export default function PaymentHistory() {
                 'Email Address',
                 'Pay Type',
                 'Billing Status',
-                'Action',
+                // 'Action',
               ].map((header) => (
                 <th
                   key={header}
@@ -79,9 +78,9 @@ export default function PaymentHistory() {
                 <td className="py-4 text-sm md:text-[16px] text-info">
                   <BillingStatusBadge status={entry.billingStatus} />
                 </td>
-                <td className="py-4 text-sm md:text-[16px] text-info cursor-pointer hover:underline text-primary">
+                {/* <td className="py-4 text-sm md:text-[16px] text-info cursor-pointer hover:underline text-primary">
                   <FaBarsStaggered />
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>

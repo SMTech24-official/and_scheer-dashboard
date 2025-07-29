@@ -28,6 +28,8 @@ export default function UserManagement() {
     return true;
   });
 
+  console.log("userData", userData)
+
   return (
     <div className="md:px-12 min-h-screen mt-8">
       {/* Table Title */}
@@ -122,6 +124,8 @@ export default function UserManagement() {
                 </td>
                 <td className="py-4 text-sm md:text-[16px] text-info">
                   {/* Status badge or info here */}
+
+                  {user?.status}
                 </td>
                 <td className="py-4 text-sm md:text-[16px] text-info cursor-pointer">
                   {user?.role === "EMPLOYEE" && (

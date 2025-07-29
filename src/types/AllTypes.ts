@@ -208,7 +208,7 @@ export interface Plan {
   active: boolean;
   description: string;
   features: string[];
-  planType: "subscription" | "payPerJob";
+  planType: "subscription" | "payPerJob" | "Employer_Plan"
   totalSubscribers: number;
   createdAt: string;
   updatedAt: string;
@@ -353,6 +353,96 @@ export type Transaction = {
     email?:         string;
     payType?:       string;
     billingStatus?: string;
+}
+
+
+
+
+
+
+// profile type 
+export type Profile = {
+    socialMedia?:    SocialMedia;
+    id?:             string;
+    firstName?:      string;
+    lastName?:       string;
+    phoneNumber?:    string;
+    profileId?:      string;
+    email?:          string;
+    countryRegion?:  string;
+    address?:        string;
+    city?:           string;
+    state?:          string;
+    zipCode?:        string;
+    JobTitle?:       string;
+    jobDescription?: string;
+    jobExperience?:  JobExperience[];
+    education?:      Education[];
+    certifications?: any[];
+    skills?:         string[];
+    aboutMe?:        string;
+    userId?:         string;
+    createdAt?:      Date;
+    updatedAt?:      Date;
+    User?:           ProfileUser;
+}
+
+export type ProfileUser = {
+    id?:                     string;
+    firstName?:              string;
+    lastName?:               string;
+    fullName?:               string;
+    email?:                  string;
+    password?:               string;
+    profilePic?:             string;
+    phone?:                  string;
+    preferredContactMethod?: string;
+    passwordChangedAt?:      null;
+    isVerified?:             boolean;
+    isResetPassword?:        boolean;
+    canResetPassword?:       boolean;
+    isResentOtp?:            boolean;
+    role?:                   string;
+    isSubscribed?:           boolean;
+    companyName?:            string;
+    joiningDate?:            null;
+    planExpiration?:         Date;
+    address?:                null;
+    city?:                   null;
+    zipCode?:                null;
+    status?:                 null;
+    subscriptionType?:       string;
+    planId?:                 string;
+    totalPayPerJobCount?:    number;
+    createdAt?:              Date;
+    updatedAt?:              Date;
+}
+
+export type Education = {
+    degree?:           string;
+    institution_name?: string;
+    major?:            string;
+
+     startDate?: string;
+  endDate?: string;
+}
+
+export type JobExperience = {
+    job_title?:       string;
+    company_name?:    string;
+    start_date?:      Date;
+    end_date?:        Date;
+    job_description?: string;
+}
+
+export type SocialMedia = {
+    linkedin_profile_url?:   string;
+    personal_website_url?:   string;
+    other_social_media?:     string;
+    other_social_media_url?: string;
+    github_url?:             null;
+    twitter_url?:            null;
+    portfolio_url?:          null;
 }
 
 

@@ -1,4 +1,3 @@
-import { Tag } from './../../../components/profile/Tag';
 import { JobResponse, JobsListResponse, UpdateJobRequest } from "../../../types/AllTypes";
 import { baseUrlApi } from "../../api/baseUrlApi";
 
