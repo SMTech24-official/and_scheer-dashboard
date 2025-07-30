@@ -1,159 +1,197 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
-import profileImg from '../../../assets/profile.jpg'
-import { useChangePasswordMutation, useGetCurrentUserQuery, useMakeAdminMutation, useUpdateContactInfoMutation } from "../../../redux/features/auth/auth"
-import ButtonChange from "../../shared/ButtonChange"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import profileImg from "../../../assets/profile.jpg";
+import {
+  useChangePasswordMutation,
+  useGetCurrentUserQuery,
+  useMakeAdminMutation,
+  useUpdateContactInfoMutation,
+} from "../../../redux/features/auth/auth";
+import ButtonChange from "../../shared/ButtonChange";
+import { useUpdateUserMutation } from "../../../redux/features/userManger/userApi";
 
 export default function SettingsContent() {
-  const [preferredContactMethod, setPreferredContactMethod] = useState("phone")
-  const {data:users}=useGetCurrentUserQuery({})
+  const [preferredContactMethod, setPreferredContactMethod] = useState("phone");
+  const { data: users } = useGetCurrentUserQuery({});
 
   // Forms for each section
-  const {
-    register: registerAdminInfo,
-    handleSubmit: handleAdminInfoSubmit,
-  } = useForm()
+  const { register: registerAdminInfo, handleSubmit: handleAdminInfoSubmit } =
+    useForm();
 
   const {
     register: registerInviteAdmin,
     handleSubmit: handleInviteAdminSubmit,
-  } = useForm()
+  } = useForm();
 
   const {
     register: registerContactInfo,
     handleSubmit: handleContactInfoSubmit,
-  } = useForm()
+  } = useForm();
 
   const {
     register: registerPasswordChange,
     handleSubmit: handlePasswordChangeSubmit,
-  } = useForm()
+  } = useForm();
 
   // Handlers
-  const onAdminInfoSubmit = (data: any) => {
-    console.log("Admin Info:", data)
+  const [updateUser,{isError:infoError,isLoading:loading,isSuccess:success}]=useUpdateUserMutation()
+ const onAdminInfoSubmit = async (data: any) => {
+  console.log("admin", data);
+
+  // Prepare form data
+  const formData = new FormData();
+
+  // Append full name and file to formData
+  formData.append("fullName", data.fullName);
+  
+  // Make sure the adminPhoto is provided and is a file (it is an array so we use the first element)
+  if (data.adminPhoto && data.adminPhoto[0]) {
+    formData.append("file", data.adminPhoto[0]);
   }
-  const [makeAdmin,{isError,isSuccess , data:res}] = useMakeAdminMutation()
+
+  // Logging the FormData content for debugging purposes (FormData doesn't log nicely, so we loop through it)
+  for (let pair of formData.entries()) {
+    console.log(pair[0], pair[1]);
+  }
+
+  try {
+    // Sending the formData via the mutation function
+    await updateUser(formData).unwrap();
+
+    if (success) {
+      toast.success("Admin updated successfully");
+    }
+
+    if (infoError) {
+      toast.error("Failed to update admin");
+    }
+  } catch (error) {
+    toast.error("Failed to update admin");
+    console.error("Invite admin error:", error);
+  }
+};
+  const [makeAdmin, { isError, isSuccess,isLoading:MakeLoading ,data: res }] = useMakeAdminMutation();
 
   const onInviteAdminSubmit = (data: any) => {
-   
     try {
-     
-      makeAdmin(data.inviteEmail)
-      if(isSuccess && res?.success){
-        toast.success("Admin invited successfully")
+      makeAdmin(data.inviteEmail);
+      if (isSuccess && res?.success) {
+        toast.success("Admin invited successfully");
       }
-      if(isError){
-        toast.error("Failed to invite admin")
+      if (isError) {
+        toast.error("Failed to invite admin");
       }
-
     } catch (error) {
-      
-      toast.error("Failed to invite admin")
+      toast.error("Failed to invite admin");
       console.error("Invite admin error:", error);
     }
-
-  }
-const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdateContactInfoMutation()
+  };
+  const [
+    contactdata,
+    { isError: isErrorContact, isSuccess: isSuccessContact },
+  ] = useUpdateContactInfoMutation();
   const onContactInfoSubmit = (data: any) => {
     console.log("Contact Info:", { ...data, preferredContactMethod });
- try {
-  
-      contactdata({ ...data, preferredContactMethod })
-      if(isSuccessContact){
-        toast.success("Contact information updated successfully")
-      }
-      if(isErrorContact){
-        toast.error("Failed to update contact information")
-      }
-
- } catch (error) {
-  
-      toast.error("Failed to update contact information")
-      console.error("Contact info error:", error);
-    
-      
- }
-
-
-
-
-
-  }
-
-
-  const[PasswordChange,]=useChangePasswordMutation()
-  const onPasswordChangeSubmit = async(data: any) => {
-    console.log("Password Change:", data)
     try {
-      const response= await PasswordChange(data)
-
-      if(response?.data.success as boolean){
-        toast.success("Password changed successfully")  
+      contactdata({ ...data, preferredContactMethod });
+      if (isSuccessContact) {
+        toast.success("Contact information updated successfully");
       }
-      
-
-      
-
+      if (isErrorContact) {
+        toast.error("Failed to update contact information");
+      }
     } catch (error) {
-      toast.error("Failed to change password")
-      console.error("Password change error:", error);
-      
+      toast.error("Failed to update contact information");
+      console.error("Contact info error:", error);
     }
-    
-  }
+  };
+
+  const [PasswordChange] = useChangePasswordMutation();
+  const onPasswordChangeSubmit = async (data: any) => {
+    console.log("Password Change:", data);
+    try {
+      const response = await PasswordChange(data);
+
+      if (response?.data.success as boolean) {
+        toast.success("Password changed successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to change password");
+      console.error("Password change error:", error);
+    }
+  };
 
   return (
     <div className="lg:px-12 min-h-screen grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="space-y-6">
         {/* Admin Information Section */}
-        <form onSubmit={handleAdminInfoSubmit(onAdminInfoSubmit)} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-12">
-          <h2 className="text-lg md:text-2xl text-black font-semibold">Admin Information</h2>
+        <form
+          onSubmit={handleAdminInfoSubmit(onAdminInfoSubmit)}
+          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-12"
+        >
+          <h2 className="text-lg md:text-2xl text-black font-semibold">
+            Admin Information
+          </h2>
           <div className="mt-6 space-y-6">
             <div>
-              <label className="text-sm md:text-[18px] text-black mb-2 block">Profile Picture:</label>
+              <label className="text-sm md:text-[18px] text-black mb-2 block">
+                Profile Picture:
+              </label>
               <div className="relative w-[234px] h-[234px]">
-                
-                  <img
-                  
+                <img
                   src={users?.data?.profilePic || profileImg}
                   alt="Profile"
                   className="w-full h-full object-cover border-neutral-100"
                 />
-                
-                <input type="file"
-                
-                 {...registerAdminInfo("adminPhoto")}
-                 id=""
-                 className=""
-                 
-                 />
               </div>
             </div>
 
-            <div>
-              <label htmlFor="adminName" className="text-sm md:text-[18px] text-black mb-2 block">Admin Name:</label>
+            <div className="relative  p-2 my-2 ">
               <input
-                {...registerAdminInfo("adminName")}
-                id="adminName"
-                value={users?.data?.fullName || ""}
+                type="file"
+                {...registerAdminInfo("adminPhoto")}
+                id="adminPhoto"
+                className="block w-full text-sm text-slate-500
+        file:mr-4 file:py-2 file:px-4 file:rounded-md
+        file:border-0 file:text-sm file:font-semibold
+        file:bg-pink-50 file:text-primary
+        hover:file:bg-pink-100 cursor-pointer"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="adminName"
+                className="text-sm md:text-[18px] text-black mb-2 block"
+              >
+                Admin Name:
+              </label>
+              <input
+                {...registerAdminInfo("fullName")}
+                id="fullName"
+                
                 type="text"
-                placeholder="Saifur Rahman"
+                placeholder="admin"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
             </div>
 
             <div>
-              <label htmlFor="emailAddress" className="text-sm md:text-[18px] text-black mb-2 block">Email Address:</label>
+              <label
+                htmlFor="emailAddress"
+                className="text-sm md:text-[18px] text-black mb-2 block"
+              >
+                Email Address:
+              </label>
               <input
                 {...registerAdminInfo("emailAddress")}
                 id="emailAddress"
                 type="email"
                 value={users?.data?.email || ""}
-                placeholder="ex.saifur.info@gmail.com"
+                placeholder="ex.saifinfo@gmail.com"
                 readOnly
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
@@ -169,20 +207,30 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
                 placeholder="+880 1967268747"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
-            </div> */}
+            </div>  */}
 
             <p className="text-end">
-              <ButtonChange type="submit"  />
+              <ButtonChange disabled={loading} type="submit" />
             </p>
           </div>
         </form>
 
         {/* Invite Admin Section */}
-        <form onSubmit={handleInviteAdminSubmit(onInviteAdminSubmit)} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-12">
-          <h2 className="text-lg md:text-2xl text-black font-semibold">Make Admin</h2>
+        <form
+          onSubmit={handleInviteAdminSubmit(onInviteAdminSubmit)}
+          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-12"
+        >
+          <h2 className="text-lg md:text-2xl text-black font-semibold">
+            Make Admin
+          </h2>
           <div className="pt-6 space-y-6">
             <div>
-              <label htmlFor="inviteEmail" className="text-sm md:text-[18px] text-black mb-2 block">Enter Email:</label>
+              <label
+                htmlFor="inviteEmail"
+                className="text-sm md:text-[18px] text-black mb-2 block"
+              >
+                Enter Email:
+              </label>
               <input
                 {...registerInviteAdmin("inviteEmail")}
                 id="inviteEmail"
@@ -214,7 +262,7 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
             </div> */}
 
             <p className="text-end">
-              <ButtonChange type="submit" title="Invite Now" />
+              <ButtonChange disabled={MakeLoading} type="submit" title="Invite Now" />
             </p>
           </div>
         </form>
@@ -222,14 +270,25 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
 
       <div className="space-y-6">
         {/* Contact Information Section */}
-        <form onSubmit={handleContactInfoSubmit(onContactInfoSubmit)} className="bg-white rounded-lg shadow-sm border border-gray-200 max-w-[750px] p-4 md:p-12">
-          <h2 className="text-lg md:text-2xl text-black font-semibold">Contact Information</h2>
+        <form
+          onSubmit={handleContactInfoSubmit(onContactInfoSubmit)}
+          className="bg-white rounded-lg shadow-sm border border-gray-200 max-w-[750px] p-4 md:p-12"
+        >
+          <h2 className="text-lg md:text-2xl text-black font-semibold">
+            Contact Information
+          </h2>
           <p className="text-[16px] text-black mt-1">
-            Ensure that your contact details are accurate for appointment confirmations, reminders, and support.
+            Ensure that your contact details are accurate for appointment
+            confirmations, reminders, and support.
           </p>
           <div className="pt-6 space-y-6">
             <div>
-              <label htmlFor="address" className="text-sm md:text-[18px] text-black mb-2 block">Business Address:</label>
+              <label
+                htmlFor="address"
+                className="text-sm md:text-[18px] text-black mb-2 block"
+              >
+                Business Address:
+              </label>
               <textarea
                 {...registerContactInfo("address")}
                 id="address"
@@ -241,7 +300,12 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="city" className="text-sm md:text-[18px] text-black mb-2 block">City:</label>
+                <label
+                  htmlFor="city"
+                  className="text-sm md:text-[18px] text-black mb-2 block"
+                >
+                  City:
+                </label>
                 <input
                   {...registerContactInfo("city")}
                   id="city"
@@ -251,7 +315,12 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
                 />
               </div>
               <div>
-                <label htmlFor="zipCode" className="text-sm md:text-[18px] text-black mb-2 block">Zip Code:</label>
+                <label
+                  htmlFor="zipCode"
+                  className="text-sm md:text-[18px] text-black mb-2 block"
+                >
+                  Zip Code:
+                </label>
                 <input
                   {...registerContactInfo("zipCode")}
                   id="zipCode"
@@ -264,7 +333,12 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="preferredContactMethod" className="text-sm md:text-[18px] text-black mb-2 block">Preferred Contact Method:</label>
+                <label
+                  htmlFor="preferredContactMethod"
+                  className="text-sm md:text-[18px] text-black mb-2 block"
+                >
+                  Preferred Contact Method:
+                </label>
                 <div className="relative">
                   <select
                     id="preferredContactMethod"
@@ -272,28 +346,40 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
                     onChange={(e) => setPreferredContactMethod(e.target.value)}
                     className="w-full px-[17px] py-4 border border-gray-300 rounded-md appearance-none bg-white"
                   >
-                  
                     <option value="Phone">Phone</option>
-                  
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <svg
+                      className="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
               </div>
-                <div>
-              <label htmlFor="phoneNumber" className="text-sm md:text-[18px] text-black mb-2 block">Phone Number:</label>
-              <input
-                {...registerContactInfo("phone")}
-                id="phone"
-                type="tel"
-                
-                placeholder="+880 1967268747"
-                className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
-              />
-            </div>
+              <div>
+                <label
+                  htmlFor="phoneNumber"
+                  className="text-sm md:text-[18px] text-black mb-2 block"
+                >
+                  Phone Number:
+                </label>
+                <input
+                  {...registerContactInfo("phone")}
+                  id="phone"
+                  type="tel"
+                  placeholder="+880 1967268747"
+                  className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
+                />
+              </div>
             </div>
 
             <p className="text-end">
@@ -303,14 +389,24 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
         </form>
 
         {/* Change Password Section */}
-        <form onSubmit={handlePasswordChangeSubmit(onPasswordChangeSubmit)} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-12">
-          <h2 className="text-lg md:text-2xl text-black font-semibold">Change Password:</h2>
+        <form
+          onSubmit={handlePasswordChangeSubmit(onPasswordChangeSubmit)}
+          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-12"
+        >
+          <h2 className="text-lg md:text-2xl text-black font-semibold">
+            Change Password:
+          </h2>
           <p className="text-sm md:text-[16px] text-black mt-1">
             If you wish to update your password, enter a new one below.
           </p>
           <div className="pt-6 space-y-6">
             <div>
-              <label htmlFor="currentPassword" className="text-sm md:text-[18px] text-black mb-2 block">Current Password:</label>
+              <label
+                htmlFor="currentPassword"
+                className="text-sm md:text-[18px] text-black mb-2 block"
+              >
+                Current Password:
+              </label>
               <input
                 {...registerPasswordChange("currentPassword")}
                 id="currentPassword"
@@ -321,7 +417,12 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
             </div>
 
             <div>
-              <label htmlFor="newPassword" className="text-sm md:text-[18px] text-black mb-2 block">New Password:</label>
+              <label
+                htmlFor="newPassword"
+                className="text-sm md:text-[18px] text-black mb-2 block"
+              >
+                New Password:
+              </label>
               <input
                 {...registerPasswordChange("newPassword")}
                 id="newPassword"
@@ -332,7 +433,12 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="text-sm md:text-[18px] text-black mb-2 block">Confirm Password:</label>
+              <label
+                htmlFor="confirmPassword"
+                className="text-sm md:text-[18px] text-black mb-2 block"
+              >
+                Confirm Password:
+              </label>
               <input
                 {...registerPasswordChange("confirmPassword")}
                 id="confirmPassword"
@@ -349,5 +455,5 @@ const [contactdata,{isError:isErrorContact,isSuccess:isSuccessContact}]=useUpdat
         </form>
       </div>
     </div>
-  )
+  );
 }

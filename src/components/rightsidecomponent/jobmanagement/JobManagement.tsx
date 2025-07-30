@@ -26,8 +26,9 @@ export default function JobManagement() {
   const [selectedMetric, setSelectedMetric] = useState('All Posted Jobs');
   const itemsPerPage = 11;
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: jobsdata } = useGetAllJobPostsQuery();
+  const { data: jobsdata, isLoading } = useGetAllJobPostsQuery({ page: currentPage, limit: itemsPerPage });
   const [tableJobs, setTableJobs] = useState<any[]>([]);
+  console.log()
 
   useEffect(() => {
     setCurrentPage(1);
@@ -109,7 +110,21 @@ export default function JobManagement() {
           </thead>
 
           <tbody className="divide-y divide-gray-100">
-            {jobsToShow.map((job: any) => (
+              {
+
+                isLoading? (<tr>
+                <td colSpan={7} className="py-4">
+                  {/* Skeleton Loader */}
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-6 bg-gray-300 rounded w-1/4"></div>
+                    <div className="h-6 bg-gray-300 rounded w-3/4"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/3"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/2"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/2"></div>
+                  </div>
+                </td>
+              </tr>):
+              (jobsToShow.map((job: any) => (
               <tr key={job.id} className="hover:bg-gray-50 transition-colors">
                 <td className="py-4 text-sm md:text-[16px] text-info ">
                   <div className='ml-3'>    {job.id}</div>
@@ -129,7 +144,10 @@ export default function JobManagement() {
                   <Link to={`/dashboard/job-management/job-details/${job.jobId}`}>View</Link>
                 </td>
               </tr>
-            ))}
+            )))
+              }
+
+            
           </tbody>
         </table>
       </div>

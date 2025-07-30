@@ -2,7 +2,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { useCreateUserMutation, useProfileSuspendMutation } from "../../redux/features/userManger/userApi";
+import { useDeleteUserMutation, useProfileSuspendMutation } from "../../redux/features/userManger/userApi";
 import { Profile } from "../../types/AllTypes";
 import ButtonChange from "../shared/ButtonChange";
 import HeadAboutModal from "./modal/HeadAboutModal";
@@ -20,7 +20,7 @@ const ProfileHeader = ({
  
 
   const {id}=useParams()
-  console.log("id",id)
+ 
 
 const [profileId,]=useProfileSuspendMutation()
 
@@ -41,7 +41,7 @@ const [profileId,]=useProfileSuspendMutation()
 
 
     
-  const [deleteId,]=useCreateUserMutation()
+  const [deleteId,]=useDeleteUserMutation()
 
    const handledelete =async()=>{
      if (id) {

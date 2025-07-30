@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 export default function JobDetails() {
   const { id } = useParams();
-  const { data: job, isLoading } = useGetAllJobPostsQuery();
+  const { data: job, isLoading } = useGetAllJobPostsQuery({ page: 1, limit: 20 });
   const [jobData, setJobData] = useState<any>(null);
 
 

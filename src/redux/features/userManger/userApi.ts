@@ -3,9 +3,10 @@ import { baseUrlApi } from "../../api/baseUrlApi";
 
 const usersAPI = baseUrlApi.injectEndpoints({
     endpoints: (builder) => ({
-        getAllUsers: builder.query<UserListResponse,void>({
-        query: () => "/users",
-        }),
+       getAllUsers: builder.query<UserListResponse, { page: number; limit: number } >({
+      query: ({ page, limit }) => `/users?page=${page}&limit=${limit}`,
+      providesTags: ['UserList'] as any, // Tag the response
+    }),
         getUserById: builder.query({
         query: (id) => `/users/${id}`,
         }),
@@ -15,6 +16,8 @@ const usersAPI = baseUrlApi.injectEndpoints({
             method: "POST",
             body: data,
         }),
+         // Invalidate the cache of users after creating a user
+        //  invalidatesTags:['UserList'],
         }),
         getProfileById:builder.query({
             query:(id)=>`/profiles/${id}`
@@ -22,8 +25,8 @@ const usersAPI = baseUrlApi.injectEndpoints({
 
 
         updateUser: builder.mutation({
-        query: ({ id, data }) => ({
-            url: `users/update${id}`,
+        query: ( data ) => ({
+            url: `/users/update`,
             method: "PATCH",
             body: data,
         }),

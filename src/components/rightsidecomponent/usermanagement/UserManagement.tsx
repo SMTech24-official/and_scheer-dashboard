@@ -3,14 +3,17 @@
 import { useEffect, useState } from 'react';
 import { CgArrowsV } from 'react-icons/cg';
 import { Link } from 'react-router-dom';
-import { useGetAllUsersQuery } from '../../../redux/features/userManger/userApi';
 import Pagination from './PaginationBar';
 import { format } from 'date-fns';
+import { useGetAllUsersQuery } from '../../../redux/features/userManger/userApi';
 
 export default function UserManagement() {
   const [selectedMetric, setSelectedMetric] = useState('All User');
   const [userData, setUserData] = useState<any[]>([]);
-  const { data: userdata } = useGetAllUsersQuery();
+   const [currentPage, setCurrentPage] = useState(1);
+  // const { data: userdata } = useGetAllUsersQuery();
+  const { data:userdata , isLoading} = useGetAllUsersQuery({ page: currentPage, limit: 10 })
+  
 
   useEffect(() => {
     if (userdata?.data) {
@@ -18,7 +21,7 @@ export default function UserManagement() {
     }
   }, [userdata?.data]);
 
-  const [currentPage, setCurrentPage] = useState(userdata?.meta.page || 1);
+ 
 
   // Filter users based on selectedMetric
   const filteredUsers = userData.filter((user) => {
@@ -28,7 +31,12 @@ export default function UserManagement() {
     return true;
   });
 
-  console.log("userData", userData)
+  
+
+const handlePageChange = (newPage: number) => {
+  
+  setCurrentPage(newPage);
+};
 
   return (
     <div className="md:px-12 min-h-screen mt-8">
@@ -103,7 +111,23 @@ export default function UserManagement() {
 
           {/* Table Body */}
           <tbody className="divide-y divide-gray-100">
-            {filteredUsers.map((user) => (
+             {isLoading ? (
+              <tr>
+                <td colSpan={7} className="py-4">
+                  {/* Skeleton Loader */}
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-6 bg-gray-300 rounded w-1/4"></div>
+                    <div className="h-6 bg-gray-300 rounded w-3/4"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/3"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/2"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/2"></div>
+                  </div>
+                </td>
+              </tr>
+            ) :
+
+
+           ( filteredUsers.map((user) => (
               <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                 <td className="py-4 text-sm md:text-[16px] text-info">
                   <div className='ml-3'>
@@ -136,7 +160,7 @@ export default function UserManagement() {
                   )}
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
@@ -144,7 +168,7 @@ export default function UserManagement() {
         totalItems={userdata?.meta.total || 0}
         itemsPerPage={userdata?.meta.limit || 10}
         currentPage={currentPage}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
       />
     </div>
   );

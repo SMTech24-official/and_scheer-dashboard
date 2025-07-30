@@ -18,16 +18,15 @@ const ProfilePage: React.FC = () => {
   const [profileData, setProfileData] = useState<Profile>({});
 
   const { data } = useGetProfileByIdQuery(id);
-  console.log("data", data);
+  
 
   useEffect(() => {
     if (data?.success) {
-      console.log("useEffect console data", data.data);
+     
       setProfileData(data?.data);
     }
   }, [id, data]);
 
-  console.log("profile data", profileData);
 
   return (
     <div className=" my-8 xl:mx-12 p-5 md:p-12 section-gap bg-white">

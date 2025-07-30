@@ -13,7 +13,7 @@ import Logo from '../shared/Logo';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useGetCurrentUserQuery, useSignInMutation } from '../../redux/features/auth/auth';
+import { useSignInMutation } from '../../redux/features/auth/auth';
 interface FormData {
   email: string;
   password: string;
@@ -26,14 +26,14 @@ export default function Loginform() {
 //   const router=useRouter();
 const navigate =useNavigate();
  const [signIn,{isLoading}] = useSignInMutation();
-const {data:User}=  useGetCurrentUserQuery({})
 
 
 
 
-console.log(User,"User Data");
+
+
   const onSubmit =async (data: FormData) => {
-    console.log("Form submitted:", data);
+  
     try {
       const response = await signIn(data)
       
@@ -41,7 +41,7 @@ console.log(User,"User Data");
 
 
       const decoded:any = jwtDecode(response?.data.data.accessToken);
-      console.log("Decoded JWT:", decoded);
+      
       // decoded role super_admin or admin not equal toast message and redirect to login page 
       if (decoded.role !== "SUPER_ADMIN" && decoded.role !== "ADMIN") {
         toast.error("You are not authorized to access this page.");

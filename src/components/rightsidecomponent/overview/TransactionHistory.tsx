@@ -24,7 +24,7 @@ export default function SimpleSubmissionLogsTable() {
       {/* Header */}
       <div className="py-4 border-gray-200 flex justify-between">
         <h2 className="text-lg md:text-[32px] font-semibold text-gray-900">Transaction History</h2>
-        <Link className='underline mt-6' to={"/admin/document-template/add-templete"}>
+        <Link className='underline mt-6' to={"/dashboard/payment-history"}>
           See more
         </Link>
       </div>
@@ -48,7 +48,20 @@ export default function SimpleSubmissionLogsTable() {
 
           {/* Table Body */}
           <div className="divide-y divide-gray-100">
-            {isLoading && <div className="px-6 py-4">Loading...</div>}
+            {isLoading && (
+              <tr>
+                <td colSpan={7} className="py-4">
+                  {/* Skeleton Loader */}
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-6 bg-gray-300 rounded w-1/4"></div>
+                    <div className="h-6 bg-gray-300 rounded w-3/4"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/3"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/2"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/2"></div>
+                  </div>
+                </td>
+              </tr>
+            )}
             {error && <div className="px-6 py-4 text-red-500">Error loading data</div>}
             {data?.data.map((log: any) => (
               <div key={log.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
