@@ -10,119 +10,103 @@ import {
   useMakeAdminMutation,
   useUpdateContactInfoMutation,
 } from "../../../redux/features/auth/auth";
-import ButtonChange from "../../shared/ButtonChange";
 import { useUpdateUserMutation } from "../../../redux/features/userManger/userApi";
+import ButtonChange from "../../shared/ButtonChange";
 
 export default function SettingsContent() {
   const [preferredContactMethod, setPreferredContactMethod] = useState("phone");
   const { data: users } = useGetCurrentUserQuery({});
 
   // Forms for each section
-  const { register: registerAdminInfo, handleSubmit: handleAdminInfoSubmit } =
-    useForm();
+  const {
+    register: registerAdminInfo,
+    handleSubmit: handleAdminInfoSubmit,
+    formState: { errors: adminInfoErrors },
+    reset: resetAdminInfo,
+  } = useForm();
 
   const {
     register: registerInviteAdmin,
     handleSubmit: handleInviteAdminSubmit,
+    formState: { errors: inviteAdminErrors },
+    reset: resetInviteAdmin,
   } = useForm();
 
   const {
     register: registerContactInfo,
     handleSubmit: handleContactInfoSubmit,
+    formState: { errors: contactInfoErrors },
+    reset: resetContactInfo,
   } = useForm();
 
   const {
     register: registerPasswordChange,
     handleSubmit: handlePasswordChangeSubmit,
+    formState: { errors: passwordChangeErrors },
+    watch,
+    reset: resetPassword,
   } = useForm();
 
   // Handlers
-  const [updateUser,{isError:infoError,isLoading:loading,isSuccess:success}]=useUpdateUserMutation()
- const onAdminInfoSubmit = async (data: any) => {
-  console.log("admin", data);
+  const [updateUser, { isLoading: loading }] = useUpdateUserMutation();
+  const onAdminInfoSubmit = async (data: any) => {
+    const formData = new FormData();
+    formData.append("fullName", data.fullName);
 
-  // Prepare form data
-  const formData = new FormData();
-
-  // Append full name and file to formData
-  formData.append("fullName", data.fullName);
-  
-  // Make sure the adminPhoto is provided and is a file (it is an array so we use the first element)
-  if (data.adminPhoto && data.adminPhoto[0]) {
-    formData.append("file", data.adminPhoto[0]);
-  }
-
-  // Logging the FormData content for debugging purposes (FormData doesn't log nicely, so we loop through it)
-  for (let pair of formData.entries()) {
-    console.log(pair[0], pair[1]);
-  }
-
-  try {
-    // Sending the formData via the mutation function
-    await updateUser(formData).unwrap();
-
-    if (success) {
-      toast.success("Admin updated successfully");
+    if (data.adminPhoto && data.adminPhoto[0]) {
+      formData.append("file", data.adminPhoto[0]);
     }
 
-    if (infoError) {
-      toast.error("Failed to update admin");
-    }
-  } catch (error) {
-    toast.error("Failed to update admin");
-    console.error("Invite admin error:", error);
-  }
-};
-  const [makeAdmin, { isError, isSuccess,isLoading:MakeLoading ,data: res }] = useMakeAdminMutation();
-
-  const onInviteAdminSubmit = (data: any) => {
     try {
-      makeAdmin(data.inviteEmail);
-      if (isSuccess && res?.success) {
+      await updateUser(formData).unwrap();
+      toast.success("Admin updated successfully");
+      resetAdminInfo();
+    } catch (error) {
+      toast.error("Failed to update admin");
+      console.error("Admin update error:", error);
+    }
+  };
+
+  const [makeAdmin, { isLoading: makeAdminLoading }] = useMakeAdminMutation();
+  const onInviteAdminSubmit = async (data: any) => {
+    try {
+      const res = await makeAdmin(data.inviteEmail).unwrap();
+      if (res.success) {
         toast.success("Admin invited successfully");
-      }
-      if (isError) {
-        toast.error("Failed to invite admin");
+        resetInviteAdmin();
       }
     } catch (error) {
       toast.error("Failed to invite admin");
       console.error("Invite admin error:", error);
     }
   };
-  const [
-    contactdata,
-    { isError: isErrorContact, isSuccess: isSuccessContact },
-  ] = useUpdateContactInfoMutation();
-  const onContactInfoSubmit = (data: any) => {
-    console.log("Contact Info:", { ...data, preferredContactMethod });
+
+  const [updateContact] = useUpdateContactInfoMutation();
+  const onContactInfoSubmit = async (data: any) => {
     try {
-      contactdata({ ...data, preferredContactMethod });
-      if (isSuccessContact) {
-        toast.success("Contact information updated successfully");
-      }
-      if (isErrorContact) {
-        toast.error("Failed to update contact information");
-      }
+      await updateContact({ ...data, preferredContactMethod }).unwrap();
+      toast.success("Contact information updated successfully");
+      resetContactInfo();
     } catch (error) {
       toast.error("Failed to update contact information");
       console.error("Contact info error:", error);
     }
   };
 
-  const [PasswordChange] = useChangePasswordMutation();
+  const [changePassword, { isLoading: passwordLoading }] = useChangePasswordMutation();
   const onPasswordChangeSubmit = async (data: any) => {
-    console.log("Password Change:", data);
     try {
-      const response = await PasswordChange(data);
-
-      if (response?.data.success as boolean) {
-        toast.success("Password changed successfully");
-      }
+      await changePassword(data).unwrap();
+      toast.success("Password changed successfully");
+      resetPassword();
     } catch (error) {
       toast.error("Failed to change password");
       console.error("Password change error:", error);
     }
   };
+
+  // Watch password for confirmation validation
+  const newPassword = watch("newPassword");
 
   return (
     <div className="lg:px-12 min-h-screen grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -149,34 +133,47 @@ export default function SettingsContent() {
               </div>
             </div>
 
-            <div className="relative  p-2 my-2 ">
+            <div className="relative p-2 my-2">
               <input
                 type="file"
-                {...registerAdminInfo("adminPhoto")}
+                {...registerAdminInfo("adminPhoto", {
+                  
+                })}
                 id="adminPhoto"
                 className="block w-full text-sm text-slate-500
-        file:mr-4 file:py-2 file:px-4 file:rounded-md
-        file:border-0 file:text-sm file:font-semibold
-        file:bg-pink-50 file:text-primary
-        hover:file:bg-pink-100 cursor-pointer"
+                  file:mr-4 file:py-2 file:px-4 file:rounded-md
+                  file:border-0 file:text-sm file:font-semibold
+                  file:bg-pink-50 file:text-primary
+                  hover:file:bg-pink-100 cursor-pointer"
               />
+              {adminInfoErrors.adminPhoto && (
+                <p className="text-red-500 text-sm mt-1">
+                  {adminInfoErrors.adminPhoto.message as string}
+                </p>
+              )}
             </div>
 
             <div>
               <label
-                htmlFor="adminName"
+                htmlFor="fullName"
                 className="text-sm md:text-[18px] text-black mb-2 block"
               >
                 Admin Name:
               </label>
               <input
-                {...registerAdminInfo("fullName")}
+                {...registerAdminInfo("fullName", { 
+                  required: "Full name is required" 
+                })}
                 id="fullName"
-                
                 type="text"
                 placeholder="admin"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
+              {adminInfoErrors.fullName && (
+                <p className="text-red-500 text-sm mt-1">
+                  {adminInfoErrors.fullName.message as string}
+                </p>
+              )}
             </div>
 
             <div>
@@ -193,21 +190,9 @@ export default function SettingsContent() {
                 value={users?.data?.email || ""}
                 placeholder="ex.saifinfo@gmail.com"
                 readOnly
-                className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
+                className="w-full px-[17px] py-4 border border-gray-300 rounded-md bg-gray-100"
               />
             </div>
-
-            {/* <div>
-              <label htmlFor="phoneNumber" className="text-sm md:text-[18px] text-black mb-2 block">Phone Number:</label>
-              <input
-                {...registerAdminInfo("phoneNumber")}
-                id="phoneNumber"
-                type="tel"
-                
-                placeholder="+880 1967268747"
-                className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
-              />
-            </div>  */}
 
             <p className="text-end">
               <ButtonChange disabled={loading} type="submit" />
@@ -232,37 +217,31 @@ export default function SettingsContent() {
                 Enter Email:
               </label>
               <input
-                {...registerInviteAdmin("inviteEmail")}
+                {...registerInviteAdmin("inviteEmail", { 
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email address"
+                  }
+                })}
                 id="inviteEmail"
                 type="email"
                 placeholder="ex.saifur.info@gmail.com"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
+              {inviteAdminErrors.inviteEmail && (
+                <p className="text-red-500 text-sm mt-1">
+                  {inviteAdminErrors.inviteEmail.message as string}
+                </p>
+              )}
             </div>
 
-            {/* <div>
-              <label htmlFor="assignRole" className="text-sm md:text-[18px] text-black mb-2 block">Assign Role:</label>
-              <div className="relative">
-                <select
-                  id="assignRole"
-                  value={assignRole}
-                  onChange={(e) => setAssignRole(e.target.value)}
-                  className="w-full px-[17px] py-4 border border-gray-300 rounded-md appearance-none bg-white"
-                >
-                  <option value="Admin">Admin</option>
-                  <option value="Moderator">Moderator</option>
-                  <option value="User">User</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-            </div> */}
-
             <p className="text-end">
-              <ButtonChange disabled={MakeLoading} type="submit" title="Invite Now" />
+              <ButtonChange 
+                disabled={makeAdminLoading} 
+                type="submit" 
+                title="Invite Now" 
+              />
             </p>
           </div>
         </form>
@@ -290,12 +269,19 @@ export default function SettingsContent() {
                 Business Address:
               </label>
               <textarea
-                {...registerContactInfo("address")}
+                {...registerContactInfo("address", { 
+                  required: "Address is required" 
+                })}
                 id="address"
                 rows={3}
                 placeholder="Section-06, House-70/80..."
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md resize-none"
               />
+              {contactInfoErrors.address && (
+                <p className="text-red-500 text-sm mt-1">
+                  {contactInfoErrors.address.message as string}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
@@ -307,12 +293,19 @@ export default function SettingsContent() {
                   City:
                 </label>
                 <input
-                  {...registerContactInfo("city")}
+                  {...registerContactInfo("city", { 
+                    required: "City is required" 
+                  })}
                   id="city"
                   type="text"
                   placeholder="Dhaka"
                   className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
                 />
+                {contactInfoErrors.city && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {contactInfoErrors.city.message as string}
+                  </p>
+                )}
               </div>
               <div>
                 <label
@@ -322,12 +315,23 @@ export default function SettingsContent() {
                   Zip Code:
                 </label>
                 <input
-                  {...registerContactInfo("zipCode")}
+                  {...registerContactInfo("zipCode", { 
+                    required: "Zip code is required",
+                    pattern: {
+                      value: /^\d{5}(?:[-\s]\d{4})?$/,
+                      message: "Invalid zip code"
+                    }
+                  })}
                   id="zipCode"
                   type="text"
                   placeholder="1216"
                   className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
                 />
+                {contactInfoErrors.zipCode && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {contactInfoErrors.zipCode.message as string}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -367,18 +371,29 @@ export default function SettingsContent() {
               </div>
               <div>
                 <label
-                  htmlFor="phoneNumber"
+                  htmlFor="phone"
                   className="text-sm md:text-[18px] text-black mb-2 block"
                 >
                   Phone Number:
                 </label>
                 <input
-                  {...registerContactInfo("phone")}
+                  {...registerContactInfo("phone", { 
+                    required: "Phone number is required",
+                    pattern: {
+                      value: /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/,
+                      message: "Invalid phone number"
+                    }
+                  })}
                   id="phone"
                   type="tel"
                   placeholder="+880 1967268747"
                   className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
                 />
+                {contactInfoErrors.phone && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {contactInfoErrors.phone.message as string}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -408,12 +423,19 @@ export default function SettingsContent() {
                 Current Password:
               </label>
               <input
-                {...registerPasswordChange("currentPassword")}
+                {...registerPasswordChange("currentPassword", { 
+                  required: "Current password is required" 
+                })}
                 id="currentPassword"
                 type="password"
                 placeholder="Current Password"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
+              {passwordChangeErrors.currentPassword && (
+                <p className="text-red-500 text-sm mt-1">
+                  {passwordChangeErrors.currentPassword.message as string}
+                </p>
+              )}
             </div>
 
             <div>
@@ -424,12 +446,23 @@ export default function SettingsContent() {
                 New Password:
               </label>
               <input
-                {...registerPasswordChange("newPassword")}
+                {...registerPasswordChange("newPassword", { 
+                  required: "New password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters"
+                  }
+                })}
                 id="newPassword"
                 type="password"
                 placeholder="New Password"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
+              {passwordChangeErrors.newPassword && (
+                <p className="text-red-500 text-sm mt-1">
+                  {passwordChangeErrors.newPassword.message as string}
+                </p>
+              )}
             </div>
 
             <div>
@@ -440,16 +473,29 @@ export default function SettingsContent() {
                 Confirm Password:
               </label>
               <input
-                {...registerPasswordChange("confirmPassword")}
+                {...registerPasswordChange("confirmPassword", { 
+                  required: "Please confirm your password",
+                  validate: value => 
+                    value === newPassword || "Passwords do not match"
+                })}
                 id="confirmPassword"
                 type="password"
                 placeholder="Confirm Password"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
+              {passwordChangeErrors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1">
+                  {passwordChangeErrors.confirmPassword.message as string}
+                </p>
+              )}
             </div>
 
             <p className="text-end">
-              <ButtonChange type="submit" title="Change Password" />
+              <ButtonChange 
+                type="submit" 
+                title="Change Password" 
+                disabled={passwordLoading} 
+              />
             </p>
           </div>
         </form>
