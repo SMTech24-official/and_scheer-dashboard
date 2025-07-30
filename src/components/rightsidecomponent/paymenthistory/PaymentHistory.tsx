@@ -1,7 +1,6 @@
 'use client';
 
 import { CgArrowsV } from 'react-icons/cg';
-import { FaBarsStaggered } from "react-icons/fa6";
 import { useGetAllTransactionQuery } from '../../../redux/features/Subscription/subscriptionSlice';
 
 const BillingStatusBadge = ({ status }: { status: string }) => {
@@ -27,7 +26,7 @@ function formatDate(dateStr: string) {
 }
 
 export default function PaymentHistory() {
-  const { data } = useGetAllTransactionQuery({});
+  const { data ,isLoading} = useGetAllTransactionQuery({});
   const transactions = data?.data || [];
 
   return (
@@ -48,7 +47,7 @@ export default function PaymentHistory() {
                 'Email Address',
                 'Pay Type',
                 'Billing Status',
-                'Action',
+                // 'Action',
               ].map((header) => (
                 <th
                   key={header}
@@ -64,7 +63,24 @@ export default function PaymentHistory() {
           </thead>
 
           <tbody className="divide-y divide-gray-100">
-            {transactions.map((entry: any) => (
+
+              {isLoading ? (
+              <tr>
+                <td colSpan={7} className="py-4">
+                  {/* Skeleton Loader */}
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-6 bg-gray-300 rounded w-1/4"></div>
+                    <div className="h-6 bg-gray-300 rounded w-3/4"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/3"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/2"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/2"></div>
+                  </div>
+                </td>
+              </tr>
+            ) :
+
+
+            (transactions.map((entry: any) => (
               <tr key={entry.id} className="hover:bg-gray-50 transition-colors">
                 <td className="py-4 text-sm md:text-[16px] text-info ml-3">
                   <div className='ml-3'>
@@ -79,11 +95,11 @@ export default function PaymentHistory() {
                 <td className="py-4 text-sm md:text-[16px] text-info">
                   <BillingStatusBadge status={entry.billingStatus} />
                 </td>
-                <td className="py-4 text-sm md:text-[16px] text-info cursor-pointer hover:underline text-primary">
+                {/* <td className="py-4 text-sm md:text-[16px] text-info cursor-pointer hover:underline text-primary">
                   <FaBarsStaggered />
-                </td>
+                </td> */}
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>

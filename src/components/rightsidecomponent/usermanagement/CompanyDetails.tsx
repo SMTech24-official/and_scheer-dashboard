@@ -6,6 +6,8 @@ import { CiLocationOn } from "react-icons/ci"
 import { MdEmail } from "react-icons/md"
 import { useParams } from "react-router-dom"
 import { useGetAllCompaniesQuery } from "../../../redux/features/company/companySlice"
+import { useDeleteUserMutation, useProfileSuspendMutation } from "../../../redux/features/userManger/userApi"
+import { toast } from "sonner"
 
   export default function CompanyDetails() {
     const { id } = useParams();
@@ -19,48 +21,87 @@ import { useGetAllCompaniesQuery } from "../../../redux/features/company/company
       }
     }, [company, id]);
 
-        const jobData = [
-      {
-        appId: "AFGJJ012",
-        postingDate: "Jan 25, 2025 | 08:52 AM",
-        salaryRange: "25,000 BDT",
-        position: "UI/UX Designer",
-        status: "Active",
-        applicants: "120 Person",
-        deadline: "Aug 25, 2025",
-        time: "12 Days",
-      },
-      {
-        appId: "AFGJJ012",
-        postingDate: "Jan 25, 2025 | 08:52 AM",
-        salaryRange: "25,000 BDT",
-        position: "UI/UX Designer",
-        status: "Active",
-        applicants: "90 Person",
-        deadline: "Aug 25, 2025",
-        time: "8 Days",
-      },
-      {
-        appId: "AFGJJ012",
-        postingDate: "Jan 25, 2025 | 08:52 AM",
-        salaryRange: "25,000 BDT",
-        position: "UI/UX Designer",
-        status: "Active",
-        applicants: "70 Person",
-        deadline: "Aug 25, 2025",
-        time: "15 Days",
-      },
-      {
-        appId: "AFGJJ012",
-        postingDate: "Jan 25, 2025 | 08:52 AM",
-        salaryRange: "25,000 BDT",
-        position: "UI/UX Designer",
-        status: "Pending",
-        applicants: "99 Person",
-        deadline: "Aug 25, 2025",
-        time: "8 Days",
-      },
-    ]
+    //     const jobData = [
+    //   {
+    //     appId: "AFGJJ012",
+    //     postingDate: "Jan 25, 2025 | 08:52 AM",
+    //     salaryRange: "25,000 BDT",
+    //     position: "UI/UX Designer",
+    //     status: "Active",
+    //     applicants: "120 Person",
+    //     deadline: "Aug 25, 2025",
+    //     time: "12 Days",
+    //   },
+    //   {
+    //     appId: "AFGJJ012",
+    //     postingDate: "Jan 25, 2025 | 08:52 AM",
+    //     salaryRange: "25,000 BDT",
+    //     position: "UI/UX Designer",
+    //     status: "Active",
+    //     applicants: "90 Person",
+    //     deadline: "Aug 25, 2025",
+    //     time: "8 Days",
+    //   },
+    //   {
+    //     appId: "AFGJJ012",
+    //     postingDate: "Jan 25, 2025 | 08:52 AM",
+    //     salaryRange: "25,000 BDT",
+    //     position: "UI/UX Designer",
+    //     status: "Active",
+    //     applicants: "70 Person",
+    //     deadline: "Aug 25, 2025",
+    //     time: "15 Days",
+    //   },
+    //   {
+    //     appId: "AFGJJ012",
+    //     postingDate: "Jan 25, 2025 | 08:52 AM",
+    //     salaryRange: "25,000 BDT",
+    //     position: "UI/UX Designer",
+    //     status: "Pending",
+    //     applicants: "99 Person",
+    //     deadline: "Aug 25, 2025",
+    //     time: "8 Days",
+    //   },
+    // ]
+
+
+    const [profileId,{isLoading:suspendLoading}]=useProfileSuspendMutation()
+
+  const handleSuspend =async()=>{
+     if (id) {
+      try {
+        const response = await profileId(id);
+        if (response?.data.success) {
+          toast.success("account suspended successfully");
+        } else {
+          toast.error("Failed to suspend ");
+        }
+      } catch (error) {
+        toast.error("An error occurred while suspending the account");
+      }
+    }
+  }
+
+
+    
+  const [deleteId,{isLoading:DeleteLoading}]=useDeleteUserMutation()
+
+   const handledelete =async()=>{
+     if (id) {
+      try {
+        const response = await deleteId(id);
+        if (response?.data.success) {
+          toast.success("account Delete successfully");
+        } else {
+          toast.error("Failed to Delete ");
+        }
+      } catch (error) {
+        toast.error("An error occurred while Delete the account");
+      }
+    }
+  }
+
+
 
     return (
       <div className="bg-gray-50 min-h-screen p-6">
@@ -105,10 +146,10 @@ import { useGetAllCompaniesQuery } from "../../../redux/features/company/company
                 </div>
               </div>
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 md:static md:translate-x-0 flex md:justify-end space-x-3 scale-90">
-                <button className="bg-primary hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                <button onClick={handleSuspend} disabled={suspendLoading} className="bg-primary hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">
                   Suspend Account
                 </button>
-                <button className="border border-red-500 text-red-500 hover:bg-red-50 px-4 py-2 rounded-md text-sm font-medium">
+                <button onClick={handledelete} disabled={DeleteLoading} className="border border-red-500 text-red-500 hover:bg-red-50 px-4 py-2 rounded-md text-sm font-medium">
                   Delete User
                 </button>
               </div>
@@ -145,7 +186,7 @@ import { useGetAllCompaniesQuery } from "../../../redux/features/company/company
             </div>
           </div>
           {/* Job List */}
-          <div className="p-6">
+          {/* <div className="p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Job List</h2>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -188,7 +229,7 @@ import { useGetAllCompaniesQuery } from "../../../redux/features/company/company
                 </tbody>
               </table>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     );

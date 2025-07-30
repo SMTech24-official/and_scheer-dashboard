@@ -1,21 +1,69 @@
-import { Phone, Mail, MapPin, Edit2 } from "lucide-react";
-import HeadAboutModal from "./modal/HeadAboutModal";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { toast } from "sonner";
+import { useDeleteUserMutation, useProfileSuspendMutation } from "../../redux/features/userManger/userApi";
+import { Profile } from "../../types/AllTypes";
 import ButtonChange from "../shared/ButtonChange";
-import { Link } from "react-router-dom";
+import HeadAboutModal from "./modal/HeadAboutModal";
 
-const ProfileHeade = () => {
+const ProfileHeader = ({
+  firstName,
+  lastName,
+  JobTitle,
+  phoneNumber,
+  city,
+  countryRegion,
+  email
+}:Partial<Profile>) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const handleAboutMode = () => {
-    setIsModalOpen(true);
-    console.log("yes");
-  };
+ 
+
+  const {id}=useParams()
+ 
+
+const [profileId,]=useProfileSuspendMutation()
+
+  const handleSuspend =async()=>{
+     if (id) {
+      try {
+        const response = await profileId(id);
+        if (response?.data.success) {
+          toast.success("account suspended successfully");
+        } else {
+          toast.error("Failed to suspend ");
+        }
+      } catch (error) {
+        toast.error("An error occurred while suspending the account");
+      }
+    }
+  }
+
+
+    
+  const [deleteId,]=useDeleteUserMutation()
+
+   const handledelete =async()=>{
+     if (id) {
+      try {
+        const response = await deleteId(id);
+        if (response?.data.success) {
+          toast.success("account Delete successfully");
+        } else {
+          toast.error("Failed to Delete ");
+        }
+      } catch (error) {
+        toast.error("An error occurred while Delete the account");
+      }
+    }
+  }
+
+
   return (
     <div className=" mx-auto bg-white shadow-sm border border-[#9191914D] rounded-lg p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6">
       {/* Profile Image */}
 
       <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center">
-    
         <div className="w-20 h-20 bg-blue-200 rounded-full"></div>
       </div>
 
@@ -24,25 +72,23 @@ const ProfileHeade = () => {
         {/* Header */}
         <div className="flex justify-between items-center md:items-start flex-col sm:flex-row gap-3">
           <div>
-            <h2 className="text-xl lg:text-4xl xl:text-[48px] font-bold">SAIFUR RAHMAN</h2>
-            <p className="text-subtitle text-sm md:text-[28px]">UI/UX Designer.</p>
+            <h2 className="text-xl lg:text-4xl xl:text-[48px] font-bold">
+              {firstName} {lastName}
+            </h2>
+            <p className="text-subtitle text-sm md:text-[28px]">
+             {JobTitle}
+            </p>
           </div>
 
           <div className="flex flex-col gap-4">
-            <Link to="/dashboard/candidates-list/interview-call">
-            <ButtonChange title="Select Candidate " />
-            </Link>
-            
+         
+              <ButtonChange onClick={handleSuspend} title="Suspend Account" />
+         
+
             <button
-              onClick={handleAboutMode}
-              className="px-3 py-[11px] border border-red-500 bg-red-50 text-red-500 font-semibold rounded-md hover:bg-red-100 cursor-pointer"
-            >
-              <Edit2 size={14} className="inline-block mr-1" />
-              Reject Candidate
-            </button>
-
+              onClick={handledelete}
+              className="px-3 py-[11px] border border-red-500 bg-red-50 text-red-500 font-semibold rounded-md hover:bg-red-100 cursor-pointer">Delete User</button>
           </div>
-
         </div>
 
         {/* Contact Details */}
@@ -54,7 +100,7 @@ const ProfileHeade = () => {
               <span className="font-medium">Phone:</span>
             </div>
 
-            <span className="ml-1 block text-gray-600 ">+8801567808747</span>
+            <span className="ml-1 block text-gray-600 ">{phoneNumber}</span>
           </div>
           {/* Phone */}
           <div className=" sm:pb-0 sm:pr-4">
@@ -64,7 +110,7 @@ const ProfileHeade = () => {
             </div>
 
             <span className="ml-1 block text-gray-600">
-              ux.saifur.info@gmail.com
+              {email}
             </span>
           </div>
 
@@ -75,10 +121,9 @@ const ProfileHeade = () => {
               <span className="font-medium">Location:</span>
             </div>
 
-            <span className="ml-1 block text-gray-600">Dhaka, Bangladesh</span>
+            <span className="ml-1 block text-gray-600">{city}, {countryRegion}</span>
           </div>
         </div>
-
       </div>
       <HeadAboutModal
         isModalOpen={isModalOpen}
@@ -88,4 +133,4 @@ const ProfileHeade = () => {
   );
 };
 
-export default ProfileHeade;
+export default ProfileHeader;

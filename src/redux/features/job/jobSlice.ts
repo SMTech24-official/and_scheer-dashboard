@@ -1,16 +1,13 @@
-// import { Tag } from './../../../components/profile/Tag';
 import { JobResponse, JobsListResponse, UpdateJobRequest } from "../../../types/AllTypes";
 import { baseUrlApi } from "../../api/baseUrlApi";
 
 
 const jobApi = baseUrlApi.injectEndpoints({
     endpoints: (builder) => ({
-        getAllJobPosts: builder.query<JobsListResponse, void>({
-            query: () => "/jobs/posts",
-          
-          
-
-        }),
+       getAllJobPosts: builder.query<JobsListResponse, { page: number; limit: number }>({
+      query: ({ page, limit }) => `/jobs/all-posts?page=${page}&limit=${limit}`,
+     
+    }),
 
         getMyJobPosts: builder.query({
             query: () => "/jobs/my-job-posts",
@@ -37,6 +34,7 @@ const jobApi = baseUrlApi.injectEndpoints({
                 url: `/jobs/${id}/suspend`,
                 method: "PATCH",
             }),
+            
         }),
 
         updateJobPost: builder.mutation<JobResponse, { id: string; data: UpdateJobRequest }>({

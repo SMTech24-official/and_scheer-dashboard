@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   LineChart,
@@ -78,7 +79,7 @@ const CustomDot: React.FC<CustomDotProps> = (props) => {
 export default function PerformanceChart() {
   const [isClient, setIsClient] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState('all');
-const {data:user}=useGetAllUsersQuery();
+const {data:user}=useGetAllUsersQuery({page:1, limit:50});
 
 
   const calculatePerformanceData = (data:any) => {
