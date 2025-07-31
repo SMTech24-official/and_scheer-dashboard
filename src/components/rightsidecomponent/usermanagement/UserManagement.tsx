@@ -48,9 +48,9 @@ const handlePageChange = (newPage: number) => {
             <select
               value={selectedMetric}
               onChange={(e) => setSelectedMetric(e.target.value)}
-              className="px-4 py-2 border bg-background-dark text-white rounded-md"
+              className="px-4 py-2 border bg-primary text-white rounded-md "
             >
-              <option value="All User">All User</option>
+              <option  value="All User">All User</option>
               <option value="Job Seeker">Job Seeker</option>
               <option value="Employee/Company">Employee/Company</option>
             </select>
@@ -116,11 +116,11 @@ const handlePageChange = (newPage: number) => {
                 <td colSpan={7} className="py-4">
                   {/* Skeleton Loader */}
                   <div className="animate-pulse space-y-4">
-                    <div className="h-6 bg-gray-300 rounded w-1/4"></div>
-                    <div className="h-6 bg-gray-300 rounded w-3/4"></div>
-                    <div className="h-6 bg-gray-300 rounded w-1/3"></div>
-                    <div className="h-6 bg-gray-300 rounded w-1/2"></div>
-                    <div className="h-6 bg-gray-300 rounded w-1/2"></div>
+                       <div className="h-6 bg-gray-300 rounded w-11/12 mx-auto"></div>
+                    <div className="h-6 bg-gray-300 rounded w-11/12 mx-auto"></div>
+                    <div className="h-6 bg-gray-300 rounded w-11/12 mx-auto"></div>
+                    <div className="h-6 bg-gray-300 rounded w-11/12 mx-auto"></div>
+                    <div className="h-6 bg-gray-300 rounded w-11/12 mx-auto"></div>
                   </div>
                 </td>
               </tr>

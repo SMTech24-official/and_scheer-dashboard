@@ -1,12 +1,13 @@
-import { FaUserClock, FaUserPlus, FaUserTie } from "react-icons/fa";
 
 import { useEffect, useState } from "react";
-import { CiBag1 } from "react-icons/ci";
-import { RiShoppingBag4Line } from "react-icons/ri";
 import { useGetStatisticsQuery } from "../../../redux/features/statistics/statisticsSlice";
 import { StatisticData } from "../../../types/AllTypes";
 
-
+import activeEmploye from "../../../assets/activeEmploye.png";
+import activeJobs from "../../../assets/activeJob.png";
+import job from "../../../assets/job.png";
+import regiUser from "../../../assets/regiser.png";
+import company from "../../../assets/total-company.png";
 
 
 
@@ -15,6 +16,7 @@ export default function Statistics({}) {
   const [stateData, setStateData] = useState<StatisticData>({} as StatisticData)
 
   const {data:state} =useGetStatisticsQuery({})
+  console.log(state)
 
 
   useEffect(()=>{
@@ -42,31 +44,31 @@ export default function Statistics({}) {
           label: "Total Registered Users",
           value: stateData?.users?.totalVerified ?? 0,
           delta: "",
-          image: <FaUserPlus className="size-10 text-green-600" />,
+          image: <img src={regiUser} className="size-[56px] " />,
         },
         {
           label: "Active Job Seekers",
           value: stateData?.users?.activeJobSeekers ?? 0,
           delta: "",
-          image: <FaUserClock className="size-10 text-green-600" />,
+          image: <img src={activeJobs} className="size-[56px] " />,
         },
         {
           label: "Active Employers",
           value: stateData?.users?.activeEmployers ?? 0,
           delta: "",
-          image: <FaUserTie className="size-10 text-green-600" />,
+          image:  <img src={activeEmploye} className="size-[56px] " />,
         },
         {
           label: "Jobs Posted Today",
           value: stateData?.jobs?.totalPostedToday ?? 0,
           delta: "",
-          image: <RiShoppingBag4Line className="size-10 text-green-600" />,
+          image: <img src={job} className="size-[56px] " />,
         },
         {
           label: "Total Registered Companies",
           value: stateData?.companies?.totalRegistered ?? 0,
           delta: "",
-          image: <CiBag1 className="size-10 text-green-600" />,
+          image: <img src={company} className="size-[56px] " />,
         },
       ].map((item, i) => (
         <div
@@ -77,7 +79,7 @@ export default function Statistics({}) {
             <span className="text-xl xl:text-[42px] font-bold text-zinc-800">
               {item.value}
             </span>
-            <p className="size-6">{item.image}</p>
+            <div className="size-12">{item.image}</div>
           </div>
           <div className="flex justify-between gap-3">
             <span className="text-sm text-zinc-500">{item.label}</span>
