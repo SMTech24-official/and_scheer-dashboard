@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import profileImg from "../../../assets/profile.jpg";
+import profileImg from "../../../assets/User.jpg";
 import {
   useChangePasswordMutation,
   useGetCurrentUserQuery,
@@ -16,6 +16,7 @@ import ButtonChange from "../../shared/ButtonChange";
 export default function SettingsContent() {
   const [preferredContactMethod, setPreferredContactMethod] = useState("phone");
   const { data: users } = useGetCurrentUserQuery({});
+  console.log(users);
 
   // Forms for each section
   const {
@@ -51,8 +52,10 @@ export default function SettingsContent() {
   const [updateUser, { isLoading: loading }] = useUpdateUserMutation();
   const onAdminInfoSubmit = async (data: any) => {
     const formData = new FormData();
-    formData.append("fullName", data.fullName);
 
+    if (data.fullName) {
+      formData.append("fullName", data.fullName);
+    }
     if (data.adminPhoto && data.adminPhoto[0]) {
       formData.append("file", data.adminPhoto[0]);
     }
@@ -93,7 +96,8 @@ export default function SettingsContent() {
     }
   };
 
-  const [changePassword, { isLoading: passwordLoading }] = useChangePasswordMutation();
+  const [changePassword, { isLoading: passwordLoading }] =
+    useChangePasswordMutation();
   const onPasswordChangeSubmit = async (data: any) => {
     try {
       await changePassword(data).unwrap();
@@ -124,11 +128,11 @@ export default function SettingsContent() {
               <label className="text-sm md:text-[18px] text-black mb-2 block">
                 Profile Picture:
               </label>
-              <div className="relative w-[234px] h-[234px]">
+              <div className="relative w-[234px] h-[234px] ">
                 <img
                   src={users?.data?.profilePic || profileImg}
                   alt="Profile"
-                  className="w-full h-full object-cover border-neutral-100"
+                  className="w-full h-full object-cover border-neutral-100 rounded-full"
                 />
               </div>
             </div>
@@ -136,9 +140,7 @@ export default function SettingsContent() {
             <div className="relative p-2 my-2">
               <input
                 type="file"
-                {...registerAdminInfo("adminPhoto", {
-                  
-                })}
+                {...registerAdminInfo("adminPhoto", {})}
                 id="adminPhoto"
                 className="block w-full text-sm text-slate-500
                   file:mr-4 file:py-2 file:px-4 file:rounded-md
@@ -161,11 +163,12 @@ export default function SettingsContent() {
                 Admin Name:
               </label>
               <input
-                {...registerAdminInfo("fullName", { 
-                  required: "Full name is required" 
+                {...registerAdminInfo("fullName", {
+                  required: "Full name is required",
                 })}
                 id="fullName"
                 type="text"
+                defaultValue={users?.data?.fullName}
                 placeholder="admin"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
               />
@@ -217,12 +220,12 @@ export default function SettingsContent() {
                 Enter Email:
               </label>
               <input
-                {...registerInviteAdmin("inviteEmail", { 
+                {...registerInviteAdmin("inviteEmail", {
                   required: "Email is required",
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Invalid email address"
-                  }
+                    message: "Invalid email address",
+                  },
                 })}
                 id="inviteEmail"
                 type="email"
@@ -237,10 +240,10 @@ export default function SettingsContent() {
             </div>
 
             <p className="text-end">
-              <ButtonChange 
-                disabled={makeAdminLoading} 
-                type="submit" 
-                title="Invite Now" 
+              <ButtonChange
+                disabled={makeAdminLoading}
+                type="submit"
+                title="Invite Now"
               />
             </p>
           </div>
@@ -269,12 +272,13 @@ export default function SettingsContent() {
                 Business Address:
               </label>
               <textarea
-                {...registerContactInfo("address", { 
-                  required: "Address is required" 
+                {...registerContactInfo("address", {
+                  required: "Address is required",
                 })}
                 id="address"
+                defaultValue={users?.data?.address}
                 rows={3}
-                placeholder="Section-06, House-70/80..."
+                placeholder="10117 Berlin ,Germany"
                 className="w-full px-[17px] py-4 border border-gray-300 rounded-md resize-none"
               />
               {contactInfoErrors.address && (
@@ -293,12 +297,13 @@ export default function SettingsContent() {
                   City:
                 </label>
                 <input
-                  {...registerContactInfo("city", { 
-                    required: "City is required" 
+                  {...registerContactInfo("city", {
+                    required: "City is required",
                   })}
                   id="city"
                   type="text"
-                  placeholder="Dhaka"
+                  defaultValue={users?.data?.city}
+                  placeholder="Berlin"
                   className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
                 />
                 {contactInfoErrors.city && (
@@ -315,15 +320,16 @@ export default function SettingsContent() {
                   Zip Code:
                 </label>
                 <input
-                  {...registerContactInfo("zipCode", { 
+                  {...registerContactInfo("zipCode", {
                     required: "Zip code is required",
                     pattern: {
                       value: /^\d{5}(?:[-\s]\d{4})?$/,
-                      message: "Invalid zip code"
-                    }
+                      message: "Invalid zip code",
+                    },
                   })}
                   id="zipCode"
                   type="text"
+                  defaultValue={users?.data?.zipCode}
                   placeholder="1216"
                   className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
                 />
@@ -377,12 +383,13 @@ export default function SettingsContent() {
                   Phone Number:
                 </label>
                 <input
-                  {...registerContactInfo("phone", { 
+                  {...registerContactInfo("phone", {
                     required: "Phone number is required",
                     pattern: {
-                      value: /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/,
-                      message: "Invalid phone number"
-                    }
+                      value:
+                        /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/,
+                      message: "Invalid phone number",
+                    },
                   })}
                   id="phone"
                   type="tel"
@@ -423,8 +430,8 @@ export default function SettingsContent() {
                 Current Password:
               </label>
               <input
-                {...registerPasswordChange("currentPassword", { 
-                  required: "Current password is required" 
+                {...registerPasswordChange("currentPassword", {
+                  required: "Current password is required",
                 })}
                 id="currentPassword"
                 type="password"
@@ -446,12 +453,12 @@ export default function SettingsContent() {
                 New Password:
               </label>
               <input
-                {...registerPasswordChange("newPassword", { 
+                {...registerPasswordChange("newPassword", {
                   required: "New password is required",
                   minLength: {
                     value: 6,
-                    message: "Password must be at least 6 characters"
-                  }
+                    message: "Password must be at least 6 characters",
+                  },
                 })}
                 id="newPassword"
                 type="password"
@@ -473,10 +480,10 @@ export default function SettingsContent() {
                 Confirm Password:
               </label>
               <input
-                {...registerPasswordChange("confirmPassword", { 
+                {...registerPasswordChange("confirmPassword", {
                   required: "Please confirm your password",
-                  validate: value => 
-                    value === newPassword || "Passwords do not match"
+                  validate: (value) =>
+                    value === newPassword || "Passwords do not match",
                 })}
                 id="confirmPassword"
                 type="password"
@@ -491,10 +498,10 @@ export default function SettingsContent() {
             </div>
 
             <p className="text-end">
-              <ButtonChange 
-                type="submit" 
-                title="Change Password" 
-                disabled={passwordLoading} 
+              <ButtonChange
+                type="submit"
+                title="Change Password"
+                disabled={passwordLoading}
               />
             </p>
           </div>

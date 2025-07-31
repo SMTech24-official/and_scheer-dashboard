@@ -97,9 +97,9 @@ const navigate =useNavigate();
 
             {/* Welcome Message */}
 
-            <h2 className="text-2xl md:text-[48px] text-scheer-primary-dark font-bold mb-2">Hi, Welcome Back!</h2>
+            <h2 className="text-2xl md:text-[48px] text-scheer-primary-dark font-bold mb-2">Hi, Welcome Back Admin !</h2>
             <p className="text-sm text-gray-600 mb-8">
-              Please exter your email and password below!
+              Please enter your email and password below!
             </p>
 
           </div>

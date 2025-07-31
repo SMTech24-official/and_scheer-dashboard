@@ -66,7 +66,7 @@ export default function SimpleSubmissionLogsTable() {
             {data?.data.map((log: any) => (
               <div key={log.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
                 <div className="grid grid-cols-7 gap-4 items-center text-sm md:text-[16px] text-info">
-                  {/* paymentData date fns use */}
+                  {/* pagenetData date fns use */}
                   <div className="col-span-1"> 
                     {new Date(log.paymentDate).toLocaleDateString('en-US', {
                       month: 'short',
@@ -77,7 +77,7 @@ export default function SimpleSubmissionLogsTable() {
                   <div className="col-span-1">{log.planName}</div>
                   <div className="col-span-1">{log.planType}</div>
                   <div className="col-span-1">{log.userName}</div>
-                  <div className="col-span-1 overflow-auto">{log.email}</div>
+                  <div className="col-span-1 overflow-hidden">{log.email}</div>
                   <div className="col-span-1">{log.payType}</div>
                   <div className="col-span-1">{log.billingStatus}</div>
                  

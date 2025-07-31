@@ -2,13 +2,21 @@ import { UserListResponse } from "../../../types/AllTypes";
 import { baseUrlApi } from "../../api/baseUrlApi";
 
 const usersAPI = baseUrlApi.injectEndpoints({
+   
     endpoints: (builder) => ({
        getAllUsers: builder.query<UserListResponse, { page: number; limit: number } >({
       query: ({ page, limit }) => `/users?page=${page}&limit=${limit}`,
-      providesTags: ['UserList'] as any, // Tag the response
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.data.map(({ id }) => ({ type: 'User' as const, id })),
+              { type: 'User', id: 'LIST' },
+            ]
+          : [{ type: 'User', id: 'LIST' }],
     }),
         getUserById: builder.query({
         query: (id) => `/users/${id}`,
+        providesTags: ( id) => [{ type: 'User', id }],
         }),
         createUser: builder.mutation({
         query: (data) => ({
@@ -16,11 +24,11 @@ const usersAPI = baseUrlApi.injectEndpoints({
             method: "POST",
             body: data,
         }),
-         // Invalidate the cache of users after creating a user
-        //  invalidatesTags:['UserList'],
+         invalidatesTags: [{ type: 'User', id: 'LIST' }],
         }),
         getProfileById:builder.query({
-            query:(id)=>`/profiles/${id}`
+            query:(id)=>`/profiles/${id}`,
+             providesTags: ( id) => [{ type: 'Profile', id }],
         }),
 
 
@@ -30,6 +38,7 @@ const usersAPI = baseUrlApi.injectEndpoints({
             method: "PATCH",
             body: data,
         }),
+       invalidatesTags: ['Auth'],
         }),
 
         // susped
@@ -40,6 +49,7 @@ const usersAPI = baseUrlApi.injectEndpoints({
             method: "PATCH",
          
         }),
+        invalidatesTags: ( id) => [{ type: 'User', id }],
         }),
 
 
@@ -49,6 +59,10 @@ const usersAPI = baseUrlApi.injectEndpoints({
             url: `/users/delete/${id}`,
             method: "DELETE",
         }),
+        invalidatesTags: ( id) => [
+        { type: 'User', id },
+        { type: 'User', id: 'LIST' }
+      ],
         }),
     }),
 });

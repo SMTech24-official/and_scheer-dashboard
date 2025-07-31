@@ -9,6 +9,7 @@ const authApi = baseUrlApi.injectEndpoints({
         method: "POST",
         body: userData,
       }),
+       invalidatesTags: [{ type: 'Auth', id: 'LIST' }],
     }),
 
     // signIn
@@ -18,6 +19,7 @@ const authApi = baseUrlApi.injectEndpoints({
         method: "POST",
         body: signInUserData,
       }),
+      invalidatesTags: [{ type: 'Auth', id: 'LIST' }],
     }),
 
     // forgetPassword
@@ -52,6 +54,7 @@ const authApi = baseUrlApi.injectEndpoints({
         url: "/auth/me",
         method: "GET",
       }),
+        providesTags: ['Auth'],
     }),
 // Update Contact Info
     updateContactInfo: build.mutation({
@@ -60,6 +63,7 @@ const authApi = baseUrlApi.injectEndpoints({
         method: "PATCH",
         body: contactInfo,
       }),
+      invalidatesTags: ['Auth'],
     }),
 
 

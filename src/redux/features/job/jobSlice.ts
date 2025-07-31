@@ -6,7 +6,13 @@ const jobApi = baseUrlApi.injectEndpoints({
     endpoints: (builder) => ({
        getAllJobPosts: builder.query<JobsListResponse, { page: number; limit: number }>({
       query: ({ page, limit }) => `/jobs/all-posts?page=${page}&limit=${limit}`,
-     
+     providesTags: (result) =>
+        result
+          ? [
+              ...result.data.data.map(({ id }) => ({ type: 'Job' as const, id })),
+              { type: 'Job', id: 'LIST' },
+            ]
+          : [{ type: 'Job', id: 'LIST' }],
     }),
 
         getMyJobPosts: builder.query({
@@ -27,6 +33,11 @@ const jobApi = baseUrlApi.injectEndpoints({
                 url: `/jobs/${id}`,
                 method: "DELETE",
             }),
+             invalidatesTags: ( id) => [
+        { type: 'Job', id },
+        { type: 'Job', id: 'LIST' },
+        { type: 'Job', id: 'MY_LIST' }
+      ],
 
         }),
         suspendJobPost: builder.mutation({
@@ -34,6 +45,11 @@ const jobApi = baseUrlApi.injectEndpoints({
                 url: `/jobs/${id}/suspend`,
                 method: "PATCH",
             }),
+            invalidatesTags: ( id) => [
+        { type: 'Job', id },
+        { type: 'Job', id: 'LIST' },
+        { type: 'Job', id: 'MY_LIST' }
+      ],
             
         }),
 

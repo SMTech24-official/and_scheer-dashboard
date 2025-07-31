@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { CiLocationOn } from "react-icons/ci"
+import { CiLocationOn } from "react-icons/ci";
 import { useParams } from "react-router-dom";
-import { useDeleteJobPostMutation, useGetAllJobPostsQuery, useSuspendJobPostMutation } from "../../../redux/features/job/jobSlice";
 import { toast } from "sonner";
+import { useDeleteJobPostMutation, useGetAllJobPostsQuery, useSuspendJobPostMutation } from "../../../redux/features/job/jobSlice";
 
 export default function JobDetails() {
   const { id } = useParams();
@@ -30,18 +30,32 @@ export default function JobDetails() {
   };
 
   // suspend job post
-  const [suspendJobPost] = useSuspendJobPostMutation();
+  const [suspendJobPost,] = useSuspendJobPostMutation();
   const handleSuspendJob = async () => {
     if (id) {
       try {
         const response = await suspendJobPost(id);
+       
+        if (
+          response &&
+          "error" in response &&
+          response.error &&
+          typeof response.error === "object" &&
+          "data" in response.error &&
+          (response.error as { data?: any }).data
+        ) {
+          return toast.error((response.error as { data?: any }).data.message);
+        }
         if (response?.data.success) {
           toast.success("Job suspended successfully");
         } else {
           toast.error("Failed to suspend job");
         }
+        
       } catch (error) {
-        toast.error("An error occurred while suspending the job");
+       
+        toast.error(  "An error occurred while suspending the job");
+        
       }
     }
   };
