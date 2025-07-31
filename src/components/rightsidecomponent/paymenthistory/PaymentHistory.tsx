@@ -69,11 +69,11 @@ export default function PaymentHistory() {
                 <td colSpan={7} className="py-4">
                   {/* Skeleton Loader */}
                   <div className="animate-pulse space-y-4">
-                      <div className="h-6 bg-gray-300 rounded w-11/12 mx-auto"></div>
-                    <div className="h-6 bg-gray-300 rounded w-11/12 mx-auto"></div>
-                    <div className="h-6 bg-gray-300 rounded w-11/12 mx-auto"></div>
-                    <div className="h-6 bg-gray-300 rounded w-11/12 mx-auto"></div>
-                    <div className="h-6 bg-gray-300 rounded w-11/12 mx-auto"></div>
+                       <div className="h-8 bg-gray-300 rounded w-[98%] mx-auto"></div>
+                    <div className="h-8 bg-gray-300 rounded w-[98%] mx-auto"></div>
+                    <div className="h-8 bg-gray-300 rounded w-[98%] mx-auto"></div>
+                    <div className="h-8 bg-gray-300 rounded w-[98%] mx-auto"></div>
+                    <div className="h-8 bg-gray-300 rounded w-[98%] mx-auto"></div>
                   </div>
                 </td>
               </tr>
