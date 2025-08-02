@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import profileImg from "../../../assets/User.jpg";
@@ -15,8 +15,18 @@ import ButtonChange from "../../shared/ButtonChange";
 
 export default function SettingsContent() {
   const [preferredContactMethod, setPreferredContactMethod] = useState("phone");
-  const { data: users } = useGetCurrentUserQuery({});
-  console.log(users);
+  const { data } = useGetCurrentUserQuery({});
+  
+
+ const [users,setUsers]= useState<any>(null)
+ 
+useEffect(()=>{
+  if(data){
+    setUsers(data)
+  }
+},[data])
+
+  
 
   // Forms for each section
   const {
@@ -84,6 +94,7 @@ export default function SettingsContent() {
     }
   };
 
+  console.log(preferredContactMethod)
   const [updateContact] = useUpdateContactInfoMutation();
   const onContactInfoSubmit = async (data: any) => {
     try {
@@ -356,7 +367,8 @@ export default function SettingsContent() {
                     onChange={(e) => setPreferredContactMethod(e.target.value)}
                     className="w-full px-[17px] py-4 border border-gray-300 rounded-md appearance-none bg-white"
                   >
-                    <option value="Phone">Phone</option>
+                    <option value="phone">Phone</option>
+                    <option value="email">Email</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                     <svg
@@ -380,9 +392,11 @@ export default function SettingsContent() {
                   htmlFor="phone"
                   className="text-sm md:text-[18px] text-black mb-2 block"
                 >
-                  Phone Number:
+                {preferredContactMethod==="phone" && "phone Number"}
+                {preferredContactMethod==="email" && "Email"}
                 </label>
-                <input
+                {
+                  preferredContactMethod==="phone" &&(<input
                   {...registerContactInfo("phone", {
                     required: "Phone number is required",
                     pattern: {
@@ -393,9 +407,20 @@ export default function SettingsContent() {
                   })}
                   id="phone"
                   type="tel"
-                  placeholder="+880 1967268747"
+                  placeholder="+ 1967268747"
                   className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
-                />
+                />) }{ preferredContactMethod==="email"&&(<input
+                 
+                  id="email"
+                  type="email"
+                  value={users?.data?.email}
+                  readOnly
+                  title="Not Changeable"
+                  placeholder="exm.abc@gmail.com"
+                  className="w-full px-[17px] py-4 border border-gray-300 rounded-md cursor-not-allowed"
+                />)
+                }
+               
                 {contactInfoErrors.phone && (
                   <p className="text-red-500 text-sm mt-1">
                     {contactInfoErrors.phone.message as string}
