@@ -5,10 +5,11 @@ import { CiLocationOn } from "react-icons/ci";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useDeleteJobPostMutation, useGetAllJobPostsQuery, useSuspendJobPostMutation } from "../../../redux/features/job/jobSlice";
+import Loading from "../../shared/Loading";
 
 export default function JobDetails() {
   const { id } = useParams();
-  const { data: job, isLoading } = useGetAllJobPostsQuery({ page: 1, limit: 20 });
+  const { data: job, isLoading } = useGetAllJobPostsQuery({ page: 1, limit: 10 });
   const [jobData, setJobData] = useState<any>(null);
 
 
@@ -67,8 +68,8 @@ export default function JobDetails() {
     }
   }, [job, id]);
 
-  if (isLoading || !job) {
-    return <div className="p-6">Loading...</div>;
+  if (isLoading ) {
+    return <Loading /> 
   }
 
   if (!jobData) {
@@ -112,7 +113,7 @@ export default function JobDetails() {
         <div className="relative p-6 border-b border-gray-200">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between">
             <div className="flex flex-col md:flex-row items-start space-x-4">
-              <div className="w-20 h-20 md:w-[180px] md:h-[180px] bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <div className="w-20 h-20 md:w-[180px] md:h-[180px]  rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {company?.logo ? (
                   <img src={company.logo} alt={company.companyName} className="w-full h-full object-cover rounded-full" />
                 ) : (
