@@ -1,4 +1,4 @@
-import { ApiResponse, Plan } from "../../../types/AllTypes";
+import {  Plan } from "../../../types/AllTypes";
 import { baseUrlApi } from "../../api/baseUrlApi";
 
 export const subscriptionPlanApi = baseUrlApi.injectEndpoints({

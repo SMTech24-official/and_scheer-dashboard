@@ -34,7 +34,7 @@ export default function PlanCard() {
                 navigate("/dashboard/subscription")
             } else {
                 // Check if res.error is defined before accessing it
-                const errorMessage = res?.error?.data?.errorMessages?.[0]?.message || "Failed to add plan";
+                const errorMessage = "Failed to add plan";
 
                 if (errorMessage) {
                     toast.error(errorMessage);
