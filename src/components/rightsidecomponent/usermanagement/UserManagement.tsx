@@ -31,7 +31,7 @@ export default function UserManagement() {
     return true;
   });
 
-  
+  console.log(filteredUsers)
 
 const handlePageChange = (newPage: number) => {
   

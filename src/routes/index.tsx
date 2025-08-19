@@ -5,12 +5,13 @@ import NotFound from "../components/notFound/NotFound";
 import Overview from "../components/rightsidecomponent/overview/Overview";
 import JobManagement from "../components/rightsidecomponent/jobmanagement/JobManagement";
 import UserManagement from "../components/rightsidecomponent/usermanagement/UserManagement";
-import Subscription from "../components/rightsidecomponent/subscription/Subscription";
+import Subscription from "../../Subscription";
 import PaymentHistory from "../components/rightsidecomponent/paymenthistory/PaymentHistory";
 import Setting from "../components/rightsidecomponent/setting/Setting";
 import CompanyDetails from "../components/rightsidecomponent/usermanagement/CompanyDetails";
 import JobDetails from "../components/rightsidecomponent/jobmanagement/JobDetails";
 import ProfilePage from "../components/rightsidecomponent/usermanagement/ProfilePage";
+import CreatePlan from "../components/rightsidecomponent/subscription/CreatePlan";
 
 const RouterProvider: React.FC = () => {
     return (
@@ -23,6 +24,7 @@ const RouterProvider: React.FC = () => {
                     <Route path="user-management" element={<UserManagement />} />
                     <Route path="job-management" element={<JobManagement />} />
                     <Route path="subscription" element={<Subscription />} />
+                    <Route path="subscription/create" element={<CreatePlan />} />
                     <Route path="payment-history" element={<PaymentHistory />} />
                     <Route path="user-management/company-details/:id" element={<CompanyDetails />} />
                     <Route path="user-management/seeker-details/:id" element={<ProfilePage />} />

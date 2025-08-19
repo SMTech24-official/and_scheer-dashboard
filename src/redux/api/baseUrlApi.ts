@@ -5,7 +5,7 @@ export const baseUrlApi = createApi({
   tagTypes: ['User', 'Profile','Auth','Job'],
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://172.252.13.71:5005/api/v1",
+    baseUrl: "http://31.97.216.98:5000/api/v1",
     prepareHeaders: (headers) => {
       const token  = Cookies.get("accessToken");
       if (token) {

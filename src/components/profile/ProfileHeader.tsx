@@ -41,14 +41,15 @@ const [profileId,]=useProfileSuspendMutation()
 
 
     
-  const [deleteId,]=useDeleteUserMutation()
+  const [deleteId]=useDeleteUserMutation()
 
    const handledelete =async()=>{
      if (id) {
       try {
         const response = await deleteId(id);
+    
         if (response?.data.success) {
-          toast.success("account Delete successfully");
+          toast.success("Account Delete successfully");
         } else {
           toast.error("Failed to Delete ");
         }

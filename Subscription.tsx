@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useGetSubscriptionPlansQuery } from "../../../redux/features/Subscription/subscriptionSlice";
-import PlanCard from "../../shared/PlanCard";
-import { Plan } from "../../../types/AllTypes";
+import { useGetSubscriptionPlansQuery } from "./src/redux/features/Subscription/subscriptionSlice";
+import PlanCard from "./src/components/shared/PlanCard";
+import { Plan } from "./src/types/AllTypes";
+import { Link } from "react-router-dom";
 
 
 
@@ -30,6 +31,7 @@ export default function JobSeekerPlan() {
         </h2>
         <div>
           <div className="flex items-center gap-4">
+          <Link to="/dashboard/subscription/create" className="px-4 py-2 bg-primary text-white rounded-md cursor-pointer">Add</Link>
             <select
               value={selectedMetric}
               onChange={(e) =>

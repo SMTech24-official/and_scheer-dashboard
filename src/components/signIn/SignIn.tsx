@@ -118,7 +118,7 @@ const navigate =useNavigate();
             </div>
 
             {/* Login Button */}
-            <button className="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-green-700 transition">
+            <button className="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-green-600 transition cursor-pointer">
               {isLoading ? "Logging in..." : "Login"}
             </button>
 
