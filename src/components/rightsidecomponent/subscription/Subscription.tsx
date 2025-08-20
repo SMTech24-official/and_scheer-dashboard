@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useGetSubscriptionPlansQuery } from "./src/redux/features/Subscription/subscriptionSlice";
-import PlanCard from "./src/components/shared/PlanCard";
-import { Plan } from "./src/types/AllTypes";
+import { useGetSubscriptionPlansQuery } from "../../../redux/features/Subscription/subscriptionSlice";
+import PlanCard from "../../shared/PlanCard";
+import { Plan } from "../../../types/AllTypes";
 import { Link } from "react-router-dom";
 
 
@@ -13,12 +13,13 @@ export default function JobSeekerPlan() {
     "Job_Seeker_Plan" | "payPerJob" | "Employer_Plan"
   >("Job_Seeker_Plan");
 
-  const { data: apiResponse } = useGetSubscriptionPlansQuery();
+  const { data: apiResponse } = useGetSubscriptionPlansQuery({});
 
+  console.log(apiResponse)
   useEffect(() => {
     if (apiResponse) {
       setPlans(
-        apiResponse.filter((plan: Plan) => plan.description === selectedMetric)
+        apiResponse?.data.filter((plan: Plan) => plan.description === selectedMetric)
       );
     }
   }, [apiResponse, selectedMetric]);

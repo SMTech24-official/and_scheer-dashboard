@@ -5,7 +5,7 @@ import NotFound from "../components/notFound/NotFound";
 import Overview from "../components/rightsidecomponent/overview/Overview";
 import JobManagement from "../components/rightsidecomponent/jobmanagement/JobManagement";
 import UserManagement from "../components/rightsidecomponent/usermanagement/UserManagement";
-import Subscription from "../../Subscription";
+import Subscription from "../components/rightsidecomponent/subscription/Subscription";
 import PaymentHistory from "../components/rightsidecomponent/paymenthistory/PaymentHistory";
 import Setting from "../components/rightsidecomponent/setting/Setting";
 import CompanyDetails from "../components/rightsidecomponent/usermanagement/CompanyDetails";
