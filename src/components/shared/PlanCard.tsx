@@ -4,9 +4,9 @@ import { useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { BsFillPatchPlusFill } from "react-icons/bs";
 import { MdDeleteOutline } from "react-icons/md";
-import { useDeletePlanMutation } from "../../redux/features/Subscription/subscriptionSlice";
+import { useDeletePlanMutation, useUpdatePlanMutation } from "../../redux/features/Subscription/subscriptionSlice";
 import { toast } from "sonner";
-
+import Swal from 'sweetalert2'
 
 
 interface PlanCardProps {
@@ -17,25 +17,45 @@ interface PlanCardProps {
 
 export default function PlanCard({
   plan,
- 
+
 }: PlanCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedPlan, setEditedPlan] = useState(plan);
 
-  const [deletePlan]=useDeletePlanMutation()
+  const [deletePlan] = useDeletePlanMutation();
+  const [updatePlan]=useUpdatePlanMutation()
 
   const handleEdit = () => {
     setIsEditing(true);
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async(id:string) => {
     // Update logic here, e.g., API call to update the plan
     console.log("Updated Plan:", editedPlan);
+    const res = await updatePlan({id,data:editedPlan})
+    if (res && res.data) {
+      toast.success("Plan Updated Successfully!");
+    } else {
+      // Check if res.error is defined before accessing it
+      const errorMessage:any= res.error || "Failed to update plan";
+      toast.error(errorMessage);
+    }
     setIsEditing(false); // Exit editing mode
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditedPlan({ ...editedPlan, [e.target.name]: e.target.value });
+     const { name, value } = e.target;
+
+        // If the name is 'amount', convert it to a number
+        if (name === "amount" || name === "intervalCount") {
+            if (isNaN(Number(value))) return;
+            setEditedPlan({
+                ...plan,
+                [name]: value ? Number(value) : 0, 
+            });
+        } else {
+            setEditedPlan({ ...plan, [name]: value });
+        }
   };
 
   const handleAddFeature = () => {
@@ -56,15 +76,34 @@ export default function PlanCard({
     setEditedPlan({ ...editedPlan, features: updatedFeatures });
   };
 
-  const handleDelete=async(id:string)=>{
-    try {
-      const res = await deletePlan(id);
-      if(res.data){
-        toast.success("Plan Deleted!")
+  const handleDelete = async (id: string) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#28C76F",
+      cancelButtonColor: "#6A7282",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+
+        try {
+          const res = await deletePlan(id);
+          if (res.data) {
+            toast.success("Plan Deleted!")
+          }
+        } catch (error) {
+
+        }
+        // Swal.fire({
+        //   title: "Deleted!",
+        //   text: "Your file has been deleted.",
+        //   icon: "success"
+        // });
       }
-    } catch (error) {
-      
-    }
+    });
+
 
   }
 
@@ -77,11 +116,11 @@ export default function PlanCard({
             <FaEuroSign />
             {isEditing ? (
               <input
-                type="number"
+                type=""
                 name="amount"
                 value={editedPlan.amount}
                 onChange={handleChange}
-                className="text-primary text-2xl md:text-4xl xl:text-[56px] font-bold bg-transparent border-none"
+                className="text-primary text-2xl md:text-4xl xl:text-[56px] font-bold bg-transparent border-none w-full"
               />
             ) : (
               editedPlan.amount
@@ -110,7 +149,7 @@ export default function PlanCard({
             name="planName"
             value={editedPlan.planName}
             onChange={handleChange}
-            className="bg-transparent border-none"
+            className="bg-transparent border-none w-full"
           />
         ) : (
           editedPlan.planName
@@ -158,24 +197,24 @@ export default function PlanCard({
       {/* Button */}
       {isEditing ? (
         <div className="flex justify-between">
-        <button
-          className="bg-gray-500 text-white rounded px-4 py-2 mb-4 cursor-pointer"
-          onClick={()=>setIsEditing(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="bg-primary text-white rounded px-4 py-2 mb-4 cursor-pointer"
-          onClick={handleUpdate}
-        >
-          Update
-        </button>
-         </div>
+          <button
+            className="bg-gray-500 text-white rounded px-4 py-2 mb-4 cursor-pointer"
+            onClick={() => setIsEditing(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className="bg-primary text-white rounded px-4 py-2 mb-4 cursor-pointer"
+            onClick={()=>handleUpdate(editedPlan.id)}
+          >
+            Update
+          </button>
+        </div>
       ) : (
         <div>
 
-        
-        {/* <button
+
+          {/* <button
           className="bg-primary text-white rounded px-4 py-2 mb-4"
           onClick={onButtonClick}
           disabled={!onButtonClick}
@@ -186,12 +225,12 @@ export default function PlanCard({
       )}
 
       <div className="flex justify-between border-t pt-3 border-gray-300 items-center">
-      <p className="underline flex">
-        <FaUsers className="my-auto mr-2 text-primary" />
-        Total {editedPlan.totalSubscribers} Subscriber
-      </p>
+        <p className="underline flex">
+          <FaUsers className="my-auto mr-2 text-primary" />
+          Total {editedPlan.totalSubscribers} Subscriber
+        </p>
 
-      <button className="flex items-center text-red-500 hover:bg-red-200 p-2 rounded cursor-pointer transition-all duration-300 group" onClick={()=>handleDelete(editedPlan.id)}><MdDeleteOutline className="size-6 group-hover:rotate-6"/></button>
+        <button className="flex items-center text-red-500 hover:bg-red-200 p-2 rounded cursor-pointer transition-all duration-300 group" onClick={() => handleDelete(editedPlan.id)}><MdDeleteOutline className="size-6 group-hover:rotate-6" /></button>
 
       </div>
       {/* Edit Button */}
@@ -200,7 +239,7 @@ export default function PlanCard({
           className="mt-4 text-black cursor-pointer absolute right-5 top-0 flex items-center gap-1 bg-gray-100 px-2 py-1 rounded hover:bg-gray-200 transition"
           onClick={handleEdit}
         >
-         <FiEdit /> Edit
+          <FiEdit /> Edit
         </button>
       )}
     </div>

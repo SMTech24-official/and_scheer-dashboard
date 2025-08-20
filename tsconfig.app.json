@@ -22,5 +22,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "Subscription.tsx"]
+  "include": ["src", "src/components/rightsidecomponent/subscription/Subscription.tsx"]
 }

@@ -55,11 +55,11 @@ export default function PlanCard() {
         const { name, value } = e.target;
 
         // If the name is 'amount', convert it to a number
-        if (name === "amount") {
+        if (name === "amount" || name === "intervalCount") {
             if (isNaN(Number(value))) return;
             setPlan({
                 ...plan,
-                [name]: value ? Number(value) : 0, // Convert to number or default to 0 if value is empty
+                [name]: value ? Number(value) : 0, 
             });
         } else {
             setPlan({ ...plan, [name]: value });
@@ -96,7 +96,7 @@ export default function PlanCard() {
                             <span className="text-primary text-2xl md:text-4xl xl:text-[56px] font-bold flex items-center ">
                                 <FaEuroSign />
                                 <input
-                                    type="text"
+                                    type=" "
                                     name="amount"
                                     value={plan.amount}
                                     onChange={handleChange}
@@ -208,7 +208,7 @@ export default function PlanCard() {
                         type="submit"
                         className="bg-primary text-white rounded px-4 py-2 mb-4 cursor-pointer"
                     >
-                        create
+                        Create
                     </button>
                 </form>
             </div>
