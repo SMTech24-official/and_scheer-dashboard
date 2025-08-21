@@ -1,21 +1,93 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CiLocationOn } from "react-icons/ci";
+import { FaCamera, FaSpinner } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useDeleteJobPostMutation, useGetAllJobPostsQuery, useSuspendJobPostMutation } from "../../../redux/features/job/jobSlice";
 import Loading from "../../shared/Loading";
+import { useUpdateCompanyPostsMutation } from "../../../redux/features/company/companySlice";
 
 export default function JobDetails() {
   const { id } = useParams();
   const { data: job, isLoading } = useGetAllJobPostsQuery({ page: 1, limit: 10 });
   const [jobData, setJobData] = useState<any>(null);
-  const [originalJobData, setOriginalJobData] = useState<any>(null); // Keep track of original data
+  const [originalJobData, setOriginalJobData] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Thumbnail upload states
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Mutation for deleting a job post
+  const [updatePosts] = useUpdateCompanyPostsMutation();
   const [deleteId] = useDeleteJobPostMutation();
+  const [suspendJobPost] = useSuspendJobPostMutation();
+
+  // Handle thumbnail file selection
+  const handleThumbnailSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Please select a valid image file (JPEG, PNG, or WebP)");
+        return;
+      }
+
+      // Validate file size (e.g., max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        toast.error("File size must be less than 5MB");
+        return;
+      }
+
+      setThumbnailFile(file);
+      
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setThumbnailPreview(previewUrl);
+    }
+  };
+
+  // Upload thumbnail function
+  const uploadThumbnail = async (file: File) => {
+    try {
+      setIsUploadingThumbnail(true);
+      const title = jobData.title
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('data', title);
+
+      // Replace this with your actual upload endpoint
+      const result = await updatePosts({id,formData})
+      
+      if (result.data) {
+        toast.success("Thumbnail uploaded successfully");
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      console.error('Thumbnail upload error:', error);
+      toast.error("Failed to upload thumbnail");
+      return null;
+    } finally {
+      setIsUploadingThumbnail(false);
+    }
+  };
+
+  // Remove thumbnail
+  const handleRemoveThumbnail = () => {
+    setThumbnailFile(null);
+    setThumbnailPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleDeleteJob = async () => {
     if (id) {
       try {
@@ -31,8 +103,6 @@ export default function JobDetails() {
     }
   };
 
-  // Suspend job post
-  const [suspendJobPost] = useSuspendJobPostMutation();
   const handleSuspendJob = async () => {
     if (id) {
       try {
@@ -48,32 +118,46 @@ export default function JobDetails() {
     }
   };
 
-  // Function to handle saving updated job data
-  const handleSaveJob = () => {
-    // Print the updated data to console
-    console.log("Updated Job Data:", jobData);
-    
-    // Here you would typically call an API to save the updated data
-    // Example: await updateJobPost(id, jobData);
-    
-    // Update the original data to reflect the changes
-    setOriginalJobData({ ...jobData });
-    
-    setIsEditing(false);
-    toast.success("Job details updated successfully");
-    
-    // You can also print specific changes
-    console.log("Changes made:", getChanges(originalJobData, jobData));
+  const handleSaveJob = async () => {
+    try {
+      let updatedJobData = { ...jobData };
+
+      // Upload thumbnail if a new file is selected
+      if (thumbnailFile) {
+        const newThumbnailUrl = await uploadThumbnail(thumbnailFile);
+        if (newThumbnailUrl) {
+          updatedJobData.thumbnail = newThumbnailUrl;
+        }
+      }
+
+      console.log("Updated Job Data:", updatedJobData);
+      await updatePosts({ id, data: updatedJobData });
+
+      setOriginalJobData({ ...updatedJobData });
+      setJobData(updatedJobData);
+      setIsEditing(false);
+      
+      // Clear thumbnail states
+      setThumbnailFile(null);
+      setThumbnailPreview(null);
+      
+      toast.success("Job details updated successfully");
+
+      const changes = getChanges(originalJobData, updatedJobData);
+      if (Object.keys(changes).length > 0) {
+        console.log("Changes made:", changes);
+      }
+    } catch (error) {
+      toast.error("Failed to save job details");
+    }
   };
 
-  // Function to get the changes between original and updated data
   const getChanges = (original: any, updated: any) => {
     const changes: any = {};
     
     if (!original || !updated) return changes;
     
-    // Compare basic fields
-    const fieldsToCompare = ['title', 'location', 'experience', 'deadline', 'salaryRange', 'salaryType', 'jobType'];
+    const fieldsToCompare = ['title', 'location', 'experience', 'deadline', 'salaryRange', 'salaryType', 'jobType', 'thumbnail'];
     
     fieldsToCompare.forEach(field => {
       if (original[field] !== updated[field]) {
@@ -84,7 +168,6 @@ export default function JobDetails() {
       }
     });
     
-    // Compare arrays (skills)
     if (JSON.stringify(original.skills) !== JSON.stringify(updated.skills)) {
       changes.skills = {
         old: original.skills,
@@ -92,7 +175,6 @@ export default function JobDetails() {
       };
     }
     
-    // Compare features
     if (JSON.stringify(original.features) !== JSON.stringify(updated.features)) {
       changes.features = {
         old: original.features,
@@ -103,24 +185,26 @@ export default function JobDetails() {
     return changes;
   };
 
-  // Handle cancel edit
   const handleCancelEdit = () => {
-    setJobData({ ...originalJobData }); // Reset to original data
+    setJobData({ ...originalJobData });
     setIsEditing(false);
+    setThumbnailFile(null);
+    setThumbnailPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     toast.info("Edit cancelled");
   };
 
-  // Update jobData field
   const updateJobData = (field: string, value: any) => {
-    setJobData((prev:any) => ({
+    setJobData((prev: any) => ({
       ...prev,
       [field]: value
     }));
   };
 
-  // Update features
   const updateFeature = (featureTitle: string, field: string, value: any) => {
-    setJobData((prev:any) => ({
+    setJobData((prev: any) => ({
       ...prev,
       features: prev.features?.map((feature: any) => 
         feature.featureTitle.toLowerCase().includes(featureTitle.toLowerCase())
@@ -130,7 +214,6 @@ export default function JobDetails() {
     }));
   };
 
-  // Update skills
   const updateSkills = (skillsString: string) => {
     const skillsArray = skillsString.split('•').map(skill => skill.trim()).filter(skill => skill);
     updateJobData('skills', skillsArray);
@@ -140,9 +223,18 @@ export default function JobDetails() {
     if (job?.data.data && id) {
       const foundJob = job.data.data.find((item: any) => item.id === id);
       setJobData(foundJob);
-      setOriginalJobData({ ...foundJob }); // Keep a copy of original data
+      setOriginalJobData({ ...foundJob });
     }
   }, [job, id]);
+
+  // Cleanup preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (thumbnailPreview) {
+        URL.revokeObjectURL(thumbnailPreview);
+      }
+    };
+  }, [thumbnailPreview]);
 
   if (isLoading) {
     return <Loading />;
@@ -166,6 +258,7 @@ export default function JobDetails() {
     createdAt,
     company,
     status,
+    thumbnail
   } = jobData;
 
   const getFeature = (title: string) =>
@@ -179,6 +272,9 @@ export default function JobDetails() {
   const formattedDeadline = deadline ? new Date(deadline).toLocaleDateString() : "";
   const formattedCreatedAt = createdAt ? new Date(createdAt).toLocaleDateString() : "";
 
+  // Get current thumbnail URL (preview if editing, otherwise original)
+  const currentThumbnailUrl = thumbnailPreview || thumbnail;
+
   return (
     <div className="min-h-screen p-6 w-full">
       <div className="mx-auto bg-white rounded-lg shadow-sm md:px-12 py-8">
@@ -186,21 +282,73 @@ export default function JobDetails() {
         <div className="relative p-6 border-b border-gray-200">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between">
             <div className="flex flex-col md:flex-row items-start space-x-4">
-              <div className="w-20 h-20 md:w-[180px] md:h-[180px] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
-                {company?.logo ? (
+              {/* Thumbnail Section */}
+              <div className="w-20 h-20 md:w-[180px] md:h-[180px] rounded-md flex items-center justify-center flex-shrink-0 overflow-hidden relative group">
+                {currentThumbnailUrl ? (
                   <img
-                    src={company.logo}
-                    alt={company.companyName}
-                    className="w-full h-full object-cover rounded-full"
+                    src={currentThumbnailUrl}
+                    alt={company?.companyName}
+                    className="w-full h-full object-cover rounded-md"
                   />
                 ) : (
-                  <span className="text-white text-2xl md:text-[65px] font-bold">
-                    {company?.companyName?.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "?"}
-                  </span>
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-md">
+                    <span className="text-gray-400 text-2xl md:text-[65px] font-bold">
+                      {company?.companyName?.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "?"}
+                    </span>
+                  </div>
                 )}
+                
+                {/* Thumbnail Upload Overlay (only in edit mode) */}
+                {isEditing && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-md">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingThumbnail}
+                        className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition-colors disabled:opacity-50"
+                        title="Change thumbnail"
+                      >
+                        {isUploadingThumbnail ? (
+                          <FaSpinner className="animate-spin" />
+                        ) : (
+                          <FaCamera />
+                        )}
+                      </button>
+                      {(thumbnailFile || thumbnail) && (
+                        <button
+                          onClick={handleRemoveThumbnail}
+                          className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+                          title="Remove thumbnail"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Hidden file input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  onChange={handleThumbnailSelect}
+                  className="hidden"
+                />
               </div>
+
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-gray-900">{company?.companyName}</h1>
+                <h1 className="text-2xl font-bold text-gray-900 flex items-center"> 
+                  <div className="mr-3">
+                    <img
+                      src={company.logo}
+                      alt={company.companyName}
+                      className="w-24 h-24 rounded-full border border-gray-200 shadow-md bg-white"
+                    />
+                  </div>
+                  {company?.companyName}
+                </h1>
+                
                 <div className="mt-2">
                   {isEditing ? (
                     <input
@@ -220,10 +368,9 @@ export default function JobDetails() {
                         onChange={(e) => updateJobData('jobType', e.target.value)}
                         className="border border-gray-300 rounded px-2 py-1"
                       >
-                        <option value="full-time">Full-time</option>
-                        <option value="part-time">Part-time</option>
-                        <option value="contract">Contract</option>
-                        <option value="internship">Internship</option>
+                        <option value="onsite">Onsite</option>
+                        <option value="hybrid">Hybrid</option>
+                        <option value="remote">Remote</option>
                       </select>
                     ) : (
                       jobType?.charAt(0).toUpperCase() + jobType?.slice(1)
@@ -327,6 +474,13 @@ export default function JobDetails() {
                     </>
                   )}
                 </div>
+
+                {/* File upload status */}
+                {thumbnailFile && (
+                  <div className="mt-2 text-sm text-blue-600">
+                    📎 New thumbnail selected: {thumbnailFile.name}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -335,9 +489,10 @@ export default function JobDetails() {
                 <>
                   <button
                     onClick={handleSaveJob}
-                    className="bg-primary hover:bg-green-600 cursor-pointer transition text-white px-4 py-2 rounded-md text-sm font-medium"
+                    disabled={isUploadingThumbnail}
+                    className="bg-primary hover:bg-green-600 cursor-pointer transition text-white px-4 py-2 rounded-md text-sm font-medium disabled:opacity-50"
                   >
-                    Save Changes
+                    {isUploadingThumbnail ? "Uploading..." : "Save Changes"}
                   </button>
                   <button
                     onClick={handleCancelEdit}

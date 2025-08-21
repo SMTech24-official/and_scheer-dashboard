@@ -37,6 +37,14 @@ const companyApi = baseUrlApi.injectEndpoints({
       }),
     }),
 
+    updateCompanyPosts: builder.mutation({
+      query: ({id, data }) => ({
+        url: `/jobs/admin/job/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+
     deleteCompany: builder.mutation<CompanyResponse, string>({
       query: (id) => ({
         url: `/companies/${id}`,
@@ -53,5 +61,6 @@ export const {
   useUpdateCompanyMutation,
   useDeleteCompanyMutation,
   useGetMyCompanyQuery,
-  useGetCompanyPostsByIdQuery
+  useGetCompanyPostsByIdQuery,
+  useUpdateCompanyPostsMutation
 } = companyApi;
