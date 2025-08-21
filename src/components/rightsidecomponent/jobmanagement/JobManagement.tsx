@@ -20,7 +20,20 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const transformJobData = (jobs: any[]) => {
+type Job = {
+  id: any;
+  postingDate: string;
+  companyName: string;
+  position: string;
+  salaryRange: string;
+  status: string;
+  applicants: number;
+  deadline: string;
+  time: string;
+  jobId: any;
+};
+
+const transformJobData = (jobs: any[]): Job[] => {
   return jobs?.map((job) => ({
     id: job.jobId || job.id,
     postingDate: job.createdAt ? new Date(job.createdAt).toLocaleDateString('en-US', {
@@ -46,11 +59,28 @@ const transformJobData = (jobs: any[]) => {
   })) || [];
 };
 
+// Mapping from display headers to actual data property names
+const columnMapping: Record<string, string> = {
+  'Job ID': 'id',
+  'Posting Date': 'postingDate',
+  'Company Name': 'companyName',
+  'Position': 'position',
+  'Salary Range': 'salaryRange',
+  'Status': 'status',
+  'No. of Applicants': 'applicants',
+  'Deadline': 'deadline',
+  'Time': 'time',
+  'Action': 'action'
+};
+
 export default function JobManagement() {
   const [selectedMetric, setSelectedMetric] = useState('All Posted Jobs');
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
-  
+
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortColumn, setSortColumn] = useState<string>('postingDate');
+
   // Fetch data with pagination
   const { data: apiResponse, isLoading, isFetching } = useGetAllJobPostsQuery<any>({
     page: currentPage,
@@ -60,34 +90,81 @@ export default function JobManagement() {
   // Transform and memoize job data
   const transformedJobs = useMemo(() => transformJobData(apiResponse?.data?.data || []), [apiResponse]);
 
+  // Sort the filtered jobs based on the selected column and sort order
+  const sortedJobs = useMemo(() => {
+    return transformedJobs.sort((a, b) => {
+      if (sortColumn === 'postingDate' || sortColumn === 'deadline') {
+        const dateA = new Date(a[sortColumn as keyof Job]);
+        const dateB = new Date(b[sortColumn as keyof Job]);
+        return sortOrder === 'asc' ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+      } else if (sortColumn === 'applicants') {
+        // Handle numeric sorting for applicants
+        const numA = Number(a.applicants) || 0;
+        const numB = Number(b.applicants) || 0;
+        return sortOrder === 'asc' ? numA - numB : numB - numA;
+      } else {
+        // Handle string sorting for other columns
+        const valueA = String(a[sortColumn as keyof Job] || '').toLowerCase();
+        const valueB = String(b[sortColumn as keyof Job] || '').toLowerCase();
+        return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+      }
+    });
+  }, [transformedJobs, sortColumn, sortOrder]);
+
   // Apply client-side filtering
   const filteredJobs = useMemo(() => {
     if (selectedMetric === 'Open Jobs') {
-      return transformedJobs.filter(job => job.status === 'ACTIVE');
+      return sortedJobs.filter(job => job.status === 'ACTIVE');
     } else if (selectedMetric === 'Closed Jobs') {
-      return transformedJobs.filter(job => 
-        job.status === 'DELETED' || 
-        job.status === 'SUSPENDED' || 
+      return sortedJobs.filter(job =>
+        job.status === 'DELETED' ||
+        job.status === 'SUSPENDED' ||
         job.status === 'CLOSED'
       );
     }
-    return transformedJobs;
-  }, [transformedJobs, selectedMetric]);
+    return sortedJobs;
+  }, [sortedJobs, selectedMetric]);
 
   const handleFilterChange = (value: string) => {
     setSelectedMetric(value);
-    setCurrentPage(1); // Reset to first page when filter changes
+    setCurrentPage(1);
   };
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
-  console.log(apiResponse?.data?.meta?.total)
+
+  const handleSort = (header: string) => {
+    // Map the display header to the actual property name
+    const column = columnMapping[header];
+    
+    if (!column || header === 'Action') return; // Don't sort action column
+    
+    if (sortColumn === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortOrder('asc');
+    }
+  };
 
   // Calculate display text for filtered results
-  const resultsText = selectedMetric === 'All Posted Jobs' 
+  const resultsText = selectedMetric === 'All Posted Jobs'
     ? `Showing ${transformedJobs.length} of ${apiResponse?.data?.meta?.total || 0} jobs`
     : `Showing ${filteredJobs.length} jobs (filtered from ${apiResponse?.meta?.total || 0} total)`;
+
+  const headers = [
+    'Job ID',
+    'Posting Date',
+    'Company Name',
+    'Position',
+    'Salary Range',
+    'Status',
+    'No. of Applicants',
+    'Deadline',
+    'Time',
+    'Action',
+  ];
 
   return (
     <div className="md:px-12 min-h-screen mt-8">
@@ -115,25 +192,26 @@ export default function JobManagement() {
         <table className="w-full min-w-[1200px]">
           <thead className="bg-primary">
             <tr>
-              {[
-                'Job ID',
-                'Posting Date',
-                'Company Name',
-                'Position',
-                'Salary Range',
-                'Status',
-                'No. of Applicants',
-                'Deadline',
-                'Time',
-                'Action',
-              ].map((header) => (
+              {headers.map((header) => (
                 <th
                   key={header}
-                  className="font-normal py-3 text-left text-base lg:text-xl text-white"
+                  className={`font-normal py-3 text-left text-base xl:text-xl text-white ${
+                    header !== 'Action' ? 'cursor-pointer hover:bg-primary/90' : ''
+                  }`}
+                  onClick={() => handleSort(header)}
                 >
-                  <div className={`flex ${header === "Job ID" ? "ml-3" : ""}`}>
+                  <div className={`flex items-center ${header === "Job ID" ? "ml-3" : ""}`}>
                     {header}
-                    <CgArrowsV className="my-auto ml-1" />
+                    {/* Show sort arrows for sortable columns */}
+                    {header !== 'Action' && (
+                      <CgArrowsV 
+                        className={`ml-1 ${
+                          columnMapping[header] === sortColumn 
+                            ? sortOrder === 'asc' ? 'rotate-180' : '' 
+                            : 'opacity-60'
+                        }`} 
+                      />
+                    )}
                   </div>
                 </th>
               ))}
@@ -183,7 +261,7 @@ export default function JobManagement() {
         </table>
       </div>
 
-      {/* Pagination - using server-side total count */}
+      {/* Pagination */}
       {!isLoading && (
         <Pagination
           totalItems={apiResponse?.data?.meta?.total || 0}

@@ -29,19 +29,41 @@ export default function PlanCard({
     setIsEditing(true);
   };
 
-  const handleUpdate = async(id:string) => {
-    // Update logic here, e.g., API call to update the plan
-    console.log("Updated Plan:", editedPlan);
-    const res = await updatePlan({id,data:editedPlan})
+const handleUpdate = async (id: string) => {
+  // Detect changes
+  const changes: any = {};
+
+  // Compare each field in editedPlan with the original plan
+  if (editedPlan.amount !== plan.amount) {
+    changes.amount = editedPlan.amount;
+  }
+  if (editedPlan.interval !== plan.interval) {
+    changes.interval = editedPlan.interval;
+  }
+  if (editedPlan.planName !== plan.planName) {
+    changes.planName = editedPlan.planName;
+  }
+  if (JSON.stringify(editedPlan.features) !== JSON.stringify(plan.features)) {
+    changes.features = editedPlan.features;
+  }
+  if (editedPlan.totalSubscribers !== plan.totalSubscribers) {
+    changes.totalSubscribers = editedPlan.totalSubscribers;
+  }
+
+  // If there are changes, update the plan
+  if (Object.keys(changes).length > 0) {
+    const res = await updatePlan({ id, data: changes });
     if (res && res.data) {
       toast.success("Plan Updated Successfully!");
     } else {
-      // Check if res.error is defined before accessing it
-      const errorMessage:any= res.error || "Failed to update plan";
+      const errorMessage: any = res.error || "Failed to update plan";
       toast.error(errorMessage);
     }
-    setIsEditing(false); // Exit editing mode
-  };
+  }
+
+  setIsEditing(false); // Exit editing mode
+};
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
      const { name, value } = e.target;
