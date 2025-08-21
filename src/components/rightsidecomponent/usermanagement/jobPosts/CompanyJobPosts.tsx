@@ -1,8 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CgArrowsV } from "react-icons/cg";
 import { Link } from "react-router-dom";
-import { useGetAllJobPostsQuery } from "../../../redux/features/job/jobSlice";
-import Pagination from "../usermanagement/PaginationBar";
+import Pagination from "../PaginationBar";
+import { useGetAllCompaniesQuery, useGetCompanyPostsByIdQuery } from "../../../../redux/features/company/companySlice";
+import { format } from "date-fns";
+
 
 const statusStyles: Record<string, { bg: string; text: string; border: string }> = {
   ACTIVE: { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-200' },
@@ -73,7 +75,8 @@ const columnMapping: Record<string, string> = {
   'Action': 'action'
 };
 
-export default function JobManagement() {
+export default function CompanyJobPosts({ id }: { id: any }) {
+  console.log("Best itu id", id)
   const [selectedMetric, setSelectedMetric] = useState('All Posted Jobs');
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,14 +84,27 @@ export default function JobManagement() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [sortColumn, setSortColumn] = useState<string>('postingDate');
 
-  // Fetch data with pagination
-  const { data: apiResponse, isLoading, isFetching } = useGetAllJobPostsQuery<any>({
-    page: currentPage,
+
+  const { data: company } = useGetAllCompaniesQuery();
+  const [companyData, setCompanyData] = useState<any>(null);
+  const { data: jobList, isLoading, isFetching  } = useGetCompanyPostsByIdQuery({
+    id: companyData?.id, page: currentPage,
     limit: itemsPerPage
   });
+  console.log("Your listt is here", jobList)
+
+  useEffect(() => {
+    if (company?.data && id) {
+      const foundCompany = company.data.find((item: any) => item.userId === id);
+      setCompanyData(foundCompany);
+    }
+  }, [company, id]);
+  console.log("Empty l;ife hgie", companyData)
+
+
 
   // Transform and memoize job data
-  const transformedJobs = useMemo(() => transformJobData(apiResponse?.data?.data || []), [apiResponse]);
+  const transformedJobs = useMemo(() => transformJobData(jobList?.data?.data || []), [jobList]);
 
   // Sort the filtered jobs based on the selected column and sort order
   const sortedJobs = useMemo(() => {
@@ -137,9 +153,9 @@ export default function JobManagement() {
   const handleSort = (header: string) => {
     // Map the display header to the actual property name
     const column = columnMapping[header];
-    
+
     if (!column || header === 'Action') return; // Don't sort action column
-    
+
     if (sortColumn === column) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
@@ -148,10 +164,11 @@ export default function JobManagement() {
     }
   };
 
+
   // Calculate display text for filtered results
   const resultsText = selectedMetric === 'All Posted Jobs'
-    ? `Showing ${transformedJobs.length} of ${apiResponse?.data?.meta?.total || 0} jobs`
-    : `Showing ${filteredJobs.length} jobs (filtered from ${apiResponse?.meta?.total || 0} total)`;
+    ? `Showing ${transformedJobs.length} of ${jobList?.data?.meta?.total || 0} jobs`
+    : `Showing ${filteredJobs.length} jobs (filtered from ${jobList?.meta?.total || 0} total)`;
 
   const headers = [
     'Job ID',
@@ -195,21 +212,19 @@ export default function JobManagement() {
               {headers.map((header) => (
                 <th
                   key={header}
-                  className={`font-normal py-3 text-left text-base xl:text-xl text-white ${
-                    header !== 'Action' ? 'cursor-pointer hover:bg-primary/90' : ''
-                  }`}
+                  className={`font-normal py-3 text-left text-base xl:text-xl text-white ${header !== 'Action' ? 'cursor-pointer hover:bg-primary/90' : ''
+                    }`}
                   onClick={() => handleSort(header)}
                 >
                   <div className={`flex items-center ${header === "Job ID" ? "ml-3" : ""}`}>
                     {header}
                     {/* Show sort arrows for sortable columns */}
                     {header !== 'Action' && (
-                      <CgArrowsV 
-                        className={`ml-1 ${
-                          columnMapping[header] === sortColumn 
-                            ? sortOrder === 'asc' ? 'rotate-180' : '' 
+                      <CgArrowsV
+                        className={`ml-1 ${columnMapping[header] === sortColumn
+                            ? sortOrder === 'asc' ? 'rotate-180' : ''
                             : 'opacity-60'
-                        }`} 
+                          }`}
                       />
                     )}
                   </div>
@@ -236,23 +251,28 @@ export default function JobManagement() {
                 </td>
               </tr>
             ) : (
-              filteredJobs.map((job) => (
+              jobList?.data.data?.map((job:any) => (
                 <tr key={job.id} className="hover:bg-gray-50 transition-colors">
                   <td className="py-4 text-sm md:text-[16px] text-info">
-                    <div className='ml-3'>{job.id}</div>
+                    <div className='ml-3'>{job.jobId}</div>
                   </td>
-                  <td className="py-4 text-sm md:text-[16px] text-info">{job.postingDate}</td>
-                  <td className="py-4 text-sm md:text-[16px] text-info">{job.companyName}</td>
-                  <td className="py-4 text-sm md:text-[16px] text-info">{job.position}</td>
+                  <td className="py-4 text-sm md:text-[16px] text-info">{job.createdAt ? format(new Date(job.createdAt), 'dd MMM yyyy') : 'N/A'}</td>
+                  <td className="py-4 text-sm md:text-[16px] text-info">{job.company.companyName}</td>
+                  <td className="py-4 text-sm md:text-[16px] text-info">{job.title}</td>
                   <td className="py-4 text-sm md:text-[16px] text-info">{job.salaryRange}</td>
                   <td className="py-4 text-sm md:text-[16px] text-info">
                     <StatusBadge status={job.status} />
                   </td>
-                  <td className="py-4 text-sm md:text-[16px] text-info">{job.applicants}</td>
-                  <td className="py-4 text-sm md:text-[16px] text-info">{job.deadline}</td>
-                  <td className="py-4 text-sm md:text-[16px] text-info">{job.time}</td>
+                  <td className="py-4 text-sm md:text-[16px] text-info text-center mr-5">{job.noOfApplicants} persons</td>
+                  <td className="py-4 text-sm md:text-[16px] text-info">{job.deadline ? format(new Date(job.deadline), 'dd MMM yyyy') : 'N/A'}</td>
+                  <td className="py-4 text-sm md:text-[16px] text-info">
+                    {Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 3600 * 24)) >= 0
+                      ? `${Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 3600 * 24))} days `
+                      : '00 days'}
+                  </td>
+
                   <td className="py-4 text-sm md:text-[16px] text-info cursor-pointer hover:underline text-primary">
-                    <Link to={`/dashboard/job-management/job-details/${job.jobId}`}>View</Link>
+                    <Link to={`/dashboard/job-management/job-details/${job.id}`}>View</Link>
                   </td>
                 </tr>
               ))
@@ -264,7 +284,7 @@ export default function JobManagement() {
       {/* Pagination */}
       {!isLoading && (
         <Pagination
-          totalItems={apiResponse?.data?.meta?.total || 0}
+          totalItems={jobList?.data?.meta?.total || 0}
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}
           onPageChange={handlePageChange}

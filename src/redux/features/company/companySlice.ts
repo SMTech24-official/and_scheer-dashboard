@@ -17,6 +17,9 @@ const companyApi = baseUrlApi.injectEndpoints({
     getCompanyById: builder.query<CompanyResponse, string>({
       query: (id) => `/companies/${id}`,
     }),
+    getCompanyPostsById: builder.query({
+      query: ({ id, page, limit }) => `/jobs/company/${id}?page=${page}&limit=${limit}`,
+    }),
 
     createCompany: builder.mutation<CompanyResponse, CreateCompanyRequest>({
       query: (data) => ({
@@ -27,12 +30,20 @@ const companyApi = baseUrlApi.injectEndpoints({
     }),
 
     updateCompany: builder.mutation({
-        query: ({data }) => ({
-          url: `/companies/update`,
-          method: "PATCH",
-          body: data,
-        }),
+      query: ({ data }) => ({
+        url: `/companies/update`,
+        method: "PATCH",
+        body: data,
       }),
+    }),
+
+    updateCompanyPosts: builder.mutation({
+      query: ({id, data }) => ({
+        url: `/jobs/admin/job/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
 
     deleteCompany: builder.mutation<CompanyResponse, string>({
       query: (id) => ({
@@ -49,5 +60,7 @@ export const {
   useCreateCompanyMutation,
   useUpdateCompanyMutation,
   useDeleteCompanyMutation,
-  useGetMyCompanyQuery
+  useGetMyCompanyQuery,
+  useGetCompanyPostsByIdQuery,
+  useUpdateCompanyPostsMutation
 } = companyApi;
