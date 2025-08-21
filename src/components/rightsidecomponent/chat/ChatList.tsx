@@ -1,21 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import  { useState } from 'react';
 import { useGetAllChatListQuery } from "../../../redux/features/chat/chatSlice";
 import { format, isToday, isYesterday, differenceInDays } from 'date-fns';
 
 export default function ChatList() {
   const [selectedChat, setSelectedChat] = useState<any | null>(null);
-  const [info, setInfo] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
   const { data: getList } = useGetAllChatListQuery({});
   const chatList = getList?.data?.data;
 
-  useEffect(() => {
-    if (chatList) {
-      setInfo(chatList);
-    }
-  }, [getList?.data?.data]);
 
   const handleChatSelect = (room: any) => {
     setSelectedChat(room);
