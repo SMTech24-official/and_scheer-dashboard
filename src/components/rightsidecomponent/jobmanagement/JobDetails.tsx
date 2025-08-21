@@ -27,9 +27,21 @@ export default function JobDetails() {
   const [suspendJobPost] = useSuspendJobPostMutation();
 
   // Handle thumbnail file selection
-  const handleThumbnailSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleThumbnailSelect = async(event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    setIsUploadingThumbnail(true)
     if (file) {
+         const title= jobData.title;
+      const formData = new FormData();
+      formData.append('file', file);
+       formData.append('data', JSON.stringify({ title })); 
+
+      // Replace this with your actual upload endpoint
+      const result = await updatePosts({id,data:formData})
+      
+      if (result.data) {
+        toast.success("Thumbnail uploaded successfully");
+      }
       // Validate file type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
@@ -52,32 +64,6 @@ export default function JobDetails() {
     }
   };
 
-  // Upload thumbnail function
-  const uploadThumbnail = async (file: File) => {
-    try {
-      setIsUploadingThumbnail(true);
-      const title = jobData.title
-      
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('data', title);
-
-      // Replace this with your actual upload endpoint
-      const result = await updatePosts({id,formData})
-      
-      if (result.data) {
-        toast.success("Thumbnail uploaded successfully");
-      } else {
-        throw new Error('Upload failed');
-      }
-    } catch (error) {
-      console.error('Thumbnail upload error:', error);
-      toast.error("Failed to upload thumbnail");
-      return null;
-    } finally {
-      setIsUploadingThumbnail(false);
-    }
-  };
 
   // Remove thumbnail
   const handleRemoveThumbnail = () => {
@@ -122,17 +108,9 @@ export default function JobDetails() {
     try {
       let updatedJobData = { ...jobData };
 
-      // Upload thumbnail if a new file is selected
-      if (thumbnailFile) {
-        const newThumbnailUrl = await uploadThumbnail(thumbnailFile);
-        if (newThumbnailUrl) {
-          updatedJobData.thumbnail = newThumbnailUrl;
-        }
-      }
-
       console.log("Updated Job Data:", updatedJobData);
-      await updatePosts({ id, data: updatedJobData });
-
+      const res =await updatePosts({ id, data:updatedJobData });
+       console.log(res)
       setOriginalJobData({ ...updatedJobData });
       setJobData(updatedJobData);
       setIsEditing(false);
@@ -299,7 +277,7 @@ export default function JobDetails() {
                 )}
                 
                 {/* Thumbnail Upload Overlay (only in edit mode) */}
-                {isEditing && (
+               
                   <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-md">
                     <div className="flex space-x-2">
                       <button
@@ -325,7 +303,7 @@ export default function JobDetails() {
                       )}
                     </div>
                   </div>
-                )}
+          
 
                 {/* Hidden file input */}
                 <input
