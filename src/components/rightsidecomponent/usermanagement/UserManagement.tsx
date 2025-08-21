@@ -169,7 +169,7 @@ export default function UserManagement() {
                   </td>
                   <td className="py-4 text-sm md:text-[16px] text-info">{user.fullName}</td>
                   <td className="py-4 text-sm md:text-[16px] text-info">{user.email}</td>
-                  <td className="py-4 text-sm md:text-[16px] text-info">{user.companyName}</td>
+                  <td className="py-4 text-sm md:text-[16px] text-info">{user.companyName || "N/A"}</td>
                   <td className="py-4 text-sm md:text-[16px] text-info">{user.role}</td>
                   <td className="py-4 text-sm md:text-[16px] text-info">{user.status}</td>
                   <td className="py-4 text-sm md:text-[16px] text-info cursor-pointer">

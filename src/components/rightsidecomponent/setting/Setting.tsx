@@ -123,6 +123,8 @@ useEffect(()=>{
   // Watch password for confirmation validation
   const newPassword = watch("newPassword");
 
+  console.log(users)
+
   return (
     <div className="lg:px-12 min-h-screen grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="space-y-6">
@@ -392,7 +394,7 @@ useEffect(()=>{
                   htmlFor="phone"
                   className="text-sm md:text-[18px] text-black mb-2 block"
                 >
-                {preferredContactMethod==="phone" && "phone Number"}
+                {preferredContactMethod==="phone" && "Phone Number"}
                 {preferredContactMethod==="email" && "Email"}
                 </label>
                 {
@@ -407,7 +409,8 @@ useEffect(()=>{
                   })}
                   id="phone"
                   type="tel"
-                  placeholder="+ 1967268747"
+              
+                  placeholder={users?.data?.phone}
                   className="w-full px-[17px] py-4 border border-gray-300 rounded-md"
                 />) }{ preferredContactMethod==="email"&&(<input
                  

@@ -5,7 +5,11 @@ const transactionApi = baseUrlApi.injectEndpoints({
     getAllTransaction: build.query({
       query: () => "/transactions",
     }),
+     getAllCandidates: build.query({
+      query: () => "/apply/candidates",
+ 
+    }),
   }),
 });
 
-export const { useGetAllTransactionQuery } = transactionApi;
+export const { useGetAllTransactionQuery,useGetAllCandidatesQuery } = transactionApi;

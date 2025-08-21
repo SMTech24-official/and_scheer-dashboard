@@ -12,6 +12,7 @@ import CompanyDetails from "../components/rightsidecomponent/usermanagement/Comp
 import JobDetails from "../components/rightsidecomponent/jobmanagement/JobDetails";
 import ProfilePage from "../components/rightsidecomponent/usermanagement/ProfilePage";
 import CreatePlan from "../components/rightsidecomponent/subscription/CreatePlan";
+import ChatList from "../components/rightsidecomponent/chat/ChatList";
 
 const RouterProvider: React.FC = () => {
     return (
@@ -26,6 +27,7 @@ const RouterProvider: React.FC = () => {
                     <Route path="subscription" element={<Subscription />} />
                     <Route path="subscription/create" element={<CreatePlan />} />
                     <Route path="payment-history" element={<PaymentHistory />} />
+                    <Route path="chat-list" element={<ChatList />} />
                     <Route path="user-management/company-details/:id" element={<CompanyDetails />} />
                     <Route path="user-management/seeker-details/:id" element={<ProfilePage />} />
                     <Route path="job-management/job-details/:id" element={<JobDetails />} />

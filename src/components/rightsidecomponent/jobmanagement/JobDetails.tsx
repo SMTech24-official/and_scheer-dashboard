@@ -335,7 +335,7 @@ export default function JobDetails() {
                 <>
                   <button
                     onClick={handleSaveJob}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+                    className="bg-primary hover:bg-green-600 cursor-pointer transition text-white px-4 py-2 rounded-md text-sm font-medium"
                   >
                     Save Changes
                   </button>
@@ -362,7 +362,7 @@ export default function JobDetails() {
                   </button>
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+                    className="bg-gray-500 hover:bg-gray-600 cursor-pointer text-white px-4 py-2 rounded-md text-sm font-medium"
                   >
                     Edit Job
                   </button>

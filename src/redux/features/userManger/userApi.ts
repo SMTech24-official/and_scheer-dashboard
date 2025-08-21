@@ -55,6 +55,10 @@ const usersAPI = baseUrlApi.injectEndpoints({
         }),
        
         }),
+        getAllCandidates: builder.query({
+      query: () => "/apply/candidates",
+ 
+    }),
     }),
 });
 
@@ -66,4 +70,5 @@ export const {
     useCreateUserMutation,
     useUpdateUserMutation,
     useDeleteUserMutation,
+    useGetAllCandidatesQuery
 } = usersAPI;

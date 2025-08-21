@@ -4,6 +4,7 @@ import { IoSettingsOutline } from 'react-icons/io5';
 import {  LiaClipboardListSolid } from 'react-icons/lia';
 import {  MdOutlineManageAccounts, MdPayment } from 'react-icons/md';
 import { RiDashboardFill } from 'react-icons/ri';
+import { IoIosChatboxes } from "react-icons/io";
 
 export const navLink = [
   {
@@ -32,6 +33,12 @@ export const navLink = [
     name: "Payment History",
     href: "/dashboard/payment-history",
     icon: GiPayMoney,
+    
+  },
+  {
+    name: "Chat List",
+    href: "/dashboard/chat-list",
+    icon: IoIosChatboxes,
     
   },
   {

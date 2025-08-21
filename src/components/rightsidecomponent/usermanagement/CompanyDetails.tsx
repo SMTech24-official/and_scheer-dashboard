@@ -5,14 +5,18 @@ import { CgPhone } from "react-icons/cg"
 import { CiLocationOn } from "react-icons/ci"
 import { MdEmail } from "react-icons/md"
 import { useParams } from "react-router-dom"
-import { useGetAllCompaniesQuery } from "../../../redux/features/company/companySlice"
+import { useGetAllCompaniesQuery, useGetCompanyPostsByIdQuery } from "../../../redux/features/company/companySlice"
 import { useDeleteUserMutation, useProfileSuspendMutation } from "../../../redux/features/userManger/userApi"
 import { toast } from "sonner"
+import CompanyJobPosts from "./jobPosts/CompanyJobPosts"
 
   export default function CompanyDetails() {
     const { id } = useParams();
+
     const { data: company } = useGetAllCompaniesQuery();
     const [companyData, setCompanyData] = useState<any>(null);
+   const {data:jobList}= useGetCompanyPostsByIdQuery(companyData?.id);
+   console.log(jobList)
 
     useEffect(() => {
       if (company?.data && id) {
@@ -20,50 +24,7 @@ import { toast } from "sonner"
         setCompanyData(foundCompany);
       }
     }, [company, id]);
-
-    //     const jobData = [
-    //   {
-    //     appId: "AFGJJ012",
-    //     postingDate: "Jan 25, 2025 | 08:52 AM",
-    //     salaryRange: "25,000 BDT",
-    //     position: "UI/UX Designer",
-    //     status: "Active",
-    //     applicants: "120 Person",
-    //     deadline: "Aug 25, 2025",
-    //     time: "12 Days",
-    //   },
-    //   {
-    //     appId: "AFGJJ012",
-    //     postingDate: "Jan 25, 2025 | 08:52 AM",
-    //     salaryRange: "25,000 BDT",
-    //     position: "UI/UX Designer",
-    //     status: "Active",
-    //     applicants: "90 Person",
-    //     deadline: "Aug 25, 2025",
-    //     time: "8 Days",
-    //   },
-    //   {
-    //     appId: "AFGJJ012",
-    //     postingDate: "Jan 25, 2025 | 08:52 AM",
-    //     salaryRange: "25,000 BDT",
-    //     position: "UI/UX Designer",
-    //     status: "Active",
-    //     applicants: "70 Person",
-    //     deadline: "Aug 25, 2025",
-    //     time: "15 Days",
-    //   },
-    //   {
-    //     appId: "AFGJJ012",
-    //     postingDate: "Jan 25, 2025 | 08:52 AM",
-    //     salaryRange: "25,000 BDT",
-    //     position: "UI/UX Designer",
-    //     status: "Pending",
-    //     applicants: "99 Person",
-    //     deadline: "Aug 25, 2025",
-    //     time: "8 Days",
-    //   },
-    // ]
-
+ console.log(companyData)
 
     const [profileId,{isLoading:suspendLoading}]=useProfileSuspendMutation()
 
@@ -204,12 +165,12 @@ import { toast } from "sonner"
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {jobData.map((job, index) => (
+                  {jobList?.data.data?.map((job, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900">{job.appId}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{job.postingDate}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{job.jobId}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{job.createdAt}</td>
                       <td className="px-4 py-3 text-sm text-gray-900">{job.salaryRange}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{job.position}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{job.title}</td>
                       <td className="px-4 py-3">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${job.status === "Active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
@@ -218,7 +179,7 @@ import { toast } from "sonner"
                           {job.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{job.applicants}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{job.noOfApplicants}</td>
                       <td className="px-4 py-3 text-sm text-gray-900">{job.deadline}</td>
                       <td className="px-4 py-3 text-sm text-gray-900">{job.time}</td>
                       <td className="px-4 py-3">
@@ -230,6 +191,7 @@ import { toast } from "sonner"
               </table>
             </div>
           </div> */}
+          <CompanyJobPosts id={id}/>
         </div>
       </div>
     );
